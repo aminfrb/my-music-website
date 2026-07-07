@@ -1,8 +1,8 @@
-# Harmony — Frontend
+# Spidermelody — Frontend
 
-Bilingual (English / Persian, RTL-aware) web client for the **Harmony** social music
+Bilingual (English / Persian, RTL-aware) web client for the **Spidermelody** social music
 platform. Built with **Next.js (App Router) + React + TypeScript + Tailwind CSS**, talking to
-the Harmony GraphQL backend.
+the Spidermelody GraphQL backend.
 
 ## Highlights
 
@@ -22,7 +22,7 @@ the Harmony GraphQL backend.
 ## Prerequisites
 
 - Node.js ≥ 20
-- The Harmony **backend** running (default `http://localhost:4000/graphql`).
+- The Spidermelody **backend** running (default `http://localhost:4000/graphql`).
 
 ## Setup
 

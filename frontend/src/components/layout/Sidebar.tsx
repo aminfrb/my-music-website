@@ -92,7 +92,7 @@ export function Sidebar() {
       <Brand />
       <SidebarNav />
       <div className="mt-auto text-xs text-text-faint">
-        <p>Harmony · بلندگوی صداهای تازه</p>
+        <p>Spidermelody · بلندگوی صداهای تازه</p>
       </div>
     </aside>
   );

@@ -1,8 +1,8 @@
 {
-  "name": "harmony-frontend",
+  "name": "spidermelody-frontend",
   "version": "0.1.0",
   "private": true,
-  "description": "Frontend for Harmony — a bilingual (English/Persian) social music platform. Next.js + React + TypeScript.",
+  "description": "Frontend for Spidermelody — a bilingual (English/Persian) social music platform. Next.js + React + TypeScript.",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

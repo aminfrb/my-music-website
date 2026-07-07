@@ -1,4 +1,4 @@
-// Types mirroring the Harmony GraphQL schema (the subset the frontend consumes).
+// Types mirroring the Spidermelody GraphQL schema (the subset the frontend consumes).
 
 export type Locale = "en" | "fa";
 export type Role = "user" | "admin";

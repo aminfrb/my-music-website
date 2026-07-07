@@ -6,9 +6,9 @@ import type { Locale } from "./types";
 export const API_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000/graphql";
 
-const ACCESS_KEY = "harmony.accessToken";
-const REFRESH_KEY = "harmony.refreshToken";
-const LOCALE_KEY = "harmony.locale";
+const ACCESS_KEY = "spidermelody.accessToken";
+const REFRESH_KEY = "spidermelody.refreshToken";
+const LOCALE_KEY = "spidermelody.locale";
 
 export function getAccessToken(): string | null {
   if (typeof window === "undefined") return null;

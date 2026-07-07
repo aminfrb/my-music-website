@@ -4,7 +4,7 @@ export type Dict = typeof en;
 
 const en = {
   // brand / nav
-  appName: "Harmony",
+  appName: "Spidermelody",
   tagline: "Discover. Play. Share the sound.",
   nav_home: "Home",
   nav_forYou: "For You",
@@ -200,7 +200,7 @@ const en = {
 } as const;
 
 const fa: Record<keyof typeof en, string> = {
-  appName: "هارمونی",
+  appName: "اسپایدرملودی",
   tagline: "کشف کن، پخش کن، صدا را به اشتراک بگذار.",
   nav_home: "خانه",
   nav_forYou: "برای تو",

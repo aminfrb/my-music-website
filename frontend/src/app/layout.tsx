@@ -4,9 +4,9 @@ import { Providers } from "@/providers/Providers";
 import { AppShell } from "@/components/layout/AppShell";
 
 export const metadata: Metadata = {
-  title: "Harmony · Discover, play & share music",
+  title: "Spidermelody · Discover, play & share music",
   description:
-    "Harmony — a bilingual social music platform to upload, discover, play, save, react to and get recommendations for music.",
+    "Spidermelody — a bilingual social music platform to upload, discover, play, save, react to and get recommendations for music.",
 };
 
 export const viewport: Viewport = {
