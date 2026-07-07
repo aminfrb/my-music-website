@@ -16,3 +16,5 @@ export {
 } from "./RecommendationProfile";
 export { Notification, type INotification } from "./Notification";
 export { UploadSession, type IUploadSession } from "./UploadSession";
+export { Conversation, type IConversation } from "./Conversation";
+export { Message, type IMessage } from "./Message";

@@ -4,6 +4,7 @@
   "errors.forbidden": "شما اجازهٔ انجام این کار را ندارید.",
   "errors.notFound": "{entity} پیدا نشد.",
   "errors.validation": "برخی از اطلاعاتی که وارد کرده‌اید نامعتبر است.",
+  "errors.messagesDisabled": "این کاربر پیام دریافت نمی‌کند.",
   "errors.invalidCredentials": "ایمیل یا رمز عبور نادرست است.",
   "errors.emailTaken": "حسابی با این ایمیل از قبل وجود دارد.",
   "errors.accountBlocked": "این حساب مسدود شده است.",

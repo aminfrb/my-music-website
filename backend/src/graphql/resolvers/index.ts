@@ -10,6 +10,7 @@ import { notificationResolvers } from "./notification";
 import { statsResolvers } from "./stats";
 import { searchResolvers } from "./search";
 import { adminResolvers } from "./admin";
+import { messageResolvers } from "./message";
 
 type ResolverMap = Record<string, Record<string, unknown>>;
 
@@ -42,4 +43,5 @@ export const resolvers = mergeResolvers(
   statsResolvers as ResolverMap,
   searchResolvers as ResolverMap,
   adminResolvers as ResolverMap,
+  messageResolvers as ResolverMap,
 );

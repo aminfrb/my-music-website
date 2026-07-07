@@ -14,6 +14,8 @@ export interface IUser {
   role: Role;
   isVerifiedArtist: boolean;
   isTrusted: boolean;
+  /** Whether other users may start a direct-message conversation with this user. */
+  allowMessages: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -31,6 +33,7 @@ const userSchema = new Schema<IUser>(
     role: { type: String, enum: ROLES, default: "user" },
     isVerifiedArtist: { type: Boolean, default: false },
     isTrusted: { type: Boolean, default: false },
+    allowMessages: { type: Boolean, default: true },
   },
   { timestamps: true },
 );

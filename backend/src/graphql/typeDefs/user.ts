@@ -11,6 +11,8 @@ export const userTypeDefs = /* GraphQL */ `
     status: UserStatus!
     isVerifiedArtist: Boolean!
     isTrusted: Boolean!
+    "Whether other users may send this user direct messages."
+    allowMessages: Boolean!
     avatarUrl: String
     joinDate: DateTime!
 

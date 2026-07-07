@@ -10,6 +10,7 @@ import { notificationTypeDefs } from "./notification";
 import { statsTypeDefs } from "./stats";
 import { searchTypeDefs } from "./search";
 import { adminTypeDefs } from "./admin";
+import { messageTypeDefs } from "./message";
 
 export const typeDefs = [
   scalarsTypeDefs,
@@ -24,4 +25,5 @@ export const typeDefs = [
   statsTypeDefs,
   searchTypeDefs,
   adminTypeDefs,
+  messageTypeDefs,
 ];

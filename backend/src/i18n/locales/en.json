@@ -4,6 +4,7 @@
   "errors.forbidden": "You don't have permission to do that.",
   "errors.notFound": "{entity} not found.",
   "errors.validation": "Some of the information you provided is invalid.",
+  "errors.messagesDisabled": "This user isn't accepting messages.",
   "errors.invalidCredentials": "Incorrect email or password.",
   "errors.emailTaken": "An account with this email already exists.",
   "errors.accountBlocked": "This account has been blocked.",

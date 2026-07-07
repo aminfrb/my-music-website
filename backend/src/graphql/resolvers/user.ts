@@ -31,6 +31,7 @@ export const userResolvers = {
   User: {
     id: idOf,
     joinDate: (p: IUser) => p.createdAt,
+    allowMessages: (p: IUser) => p.allowMessages !== false,
     avatarUrl: (p: IUser) => mediaUrl(p.profileImageKey),
     email: (p: IUser, _a: unknown, ctx: Context) => (selfOrAdmin(p, ctx) ? p.email : null),
     mobileNumber: (p: IUser, _a: unknown, ctx: Context) => (selfOrAdmin(p, ctx) ? p.mobileNumber : null),

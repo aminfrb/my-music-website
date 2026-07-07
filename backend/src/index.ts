@@ -16,6 +16,7 @@ import { buildContext, type Context } from "./context";
 import { resolveLocale, runWithLocale, t, getLocale } from "./i18n";
 import { graphqlConsole } from "./rest/console";
 import { connectDb, disconnectDb } from "./db/mongoose";
+import { initRealtime } from "./realtime";
 
 async function main() {
   await connectDb();
@@ -101,6 +102,9 @@ async function main() {
       context: ({ req }) => buildContext({ req }),
     }),
   );
+
+  // Attach the realtime WebSocket hub (direct messages) to the same HTTP server.
+  initRealtime(httpServer);
 
   await new Promise<void>((resolve) =>
     httpServer.listen({ port: env.port }, resolve),
