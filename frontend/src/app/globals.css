@@ -1,0 +1,149 @@
+/* Fonts are loaded at runtime with graceful system fallbacks so the app never
+   fails to build offline. Vazirmatn covers Persian glyphs. */
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Righteous&family=Vazirmatn:wght@300;400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ============================================================================
+   THEME TOKENS — edit these to re-skin the whole app.
+   Every Tailwind color class (bg-primary, text-accent, …) maps to one of these.
+   ========================================================================== */
+:root {
+  /* Surfaces */
+  --color-bg: #08080f;
+  --color-bg-elevated: #101019;
+  --color-surface: #16161f;
+  --color-surface-hover: #20202e;
+  --color-border: #262636;
+
+  /* Brand */
+  --color-primary: #8b5cf6; /* violet */
+  --color-primary-strong: #7c3aed;
+  --color-accent: #f472b6; /* pink */
+  --color-accent-2: #22d3ee; /* cyan */
+
+  /* Play / success CTA */
+  --color-play: #22c55e;
+  --color-play-strong: #16a34a;
+
+  /* Feedback */
+  --color-danger: #f43f5e;
+  --color-warning: #f59e0b;
+
+  /* Text */
+  --color-text: #f5f5fa;
+  --color-text-muted: #9a9ab2;
+  --color-text-faint: #6a6a82;
+
+  /* Effects */
+  --shadow-glow: rgba(139, 92, 246, 0.35);
+  --radius-card: 18px;
+
+  /* Fonts */
+  --font-heading: "Righteous", "Vazirmatn", system-ui, sans-serif;
+  --font-body: "Poppins", "Vazirmatn", system-ui, -apple-system, sans-serif;
+
+  color-scheme: dark;
+}
+
+/* When the document is Persian, prefer Vazirmatn for headings too (Righteous has
+   no Persian glyphs). */
+:root[dir="rtl"] {
+  --font-heading: "Vazirmatn", "Righteous", system-ui, sans-serif;
+  --font-body: "Vazirmatn", "Poppins", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+}
+
+/* Ambient brand glow behind the app */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(60rem 40rem at 12% -10%, rgba(139, 92, 246, 0.16), transparent 60%),
+    radial-gradient(50rem 35rem at 100% 0%, rgba(34, 211, 238, 0.1), transparent 55%),
+    radial-gradient(45rem 30rem at 50% 120%, rgba(244, 114, 182, 0.1), transparent 60%);
+  pointer-events: none;
+}
+
+::selection {
+  background: var(--color-primary);
+  color: white;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-surface-hover);
+}
+
+/* Hide scrollbars on horizontal rails while keeping them scrollable */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+/* Range input (player seek / volume) themed with the brand color */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  border-radius: 999px;
+  background: var(--color-border);
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: var(--color-text);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.35);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 13px;
+  height: 13px;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-text);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}

@@ -1,0 +1,53 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: harmony-mongo
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - harmony_mongodata:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  minio:
+    image: minio/minio:latest
+    container_name: harmony-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: harmony
+      MINIO_ROOT_PASSWORD: harmony-secret
+    ports:
+      - "9000:9000" # S3 API
+      - "9001:9001" # web console
+    volumes:
+      - harmony_minio:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # One-shot job: create the media bucket once MinIO is up, and allow public-read
+  # so cover images can be referenced directly (audio still uses presigned URLs).
+  createbuckets:
+    image: minio/mc:latest
+    container_name: harmony-createbuckets
+    depends_on:
+      minio:
+        condition: service_started
+    entrypoint: >
+      /bin/sh -c "
+      until (/usr/bin/mc alias set local http://minio:9000 harmony harmony-secret) do echo 'waiting for minio...'; sleep 2; done;
+      /usr/bin/mc mb --ignore-existing local/harmony-media;
+      echo 'bucket ready';
+      exit 0;
+      "
+
+volumes:
+  harmony_mongodata:
+  harmony_minio:
