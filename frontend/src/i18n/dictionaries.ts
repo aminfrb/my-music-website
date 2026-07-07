@@ -20,6 +20,7 @@ const en = {
   theme: "Theme",
   themeDark: "Dark mode",
   themeLight: "Light mode",
+  closePlayer: "Close player",
 
   // auth
   login: "Log in",
@@ -219,6 +220,7 @@ const fa: Record<keyof typeof en, string> = {
   theme: "پوسته",
   themeDark: "حالت تیره",
   themeLight: "حالت روشن",
+  closePlayer: "بستن پخش‌کننده",
 
   login: "ورود",
   logout: "خروج",

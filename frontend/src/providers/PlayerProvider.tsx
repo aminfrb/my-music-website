@@ -31,6 +31,8 @@ interface PlayerContextValue {
   prev: () => void;
   seek: (seconds: number) => void;
   setVolume: (v: number) => void;
+  /** Stop playback entirely and dismiss the player bar. */
+  close: () => void;
   isCurrent: (id: string) => boolean;
 }
 
@@ -121,6 +123,28 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
     setVolumeState(v);
   }, []);
 
+  const close = useCallback(() => {
+    const audio = audioRef.current;
+    if (audio) {
+      audio.pause();
+      audio.removeAttribute("src");
+      audio.load();
+    }
+    setQueue([]);
+    setIndex(0);
+    setIsPlaying(false);
+    setCurrentTime(0);
+    setDuration(0);
+    recordedRef.current = new Set();
+    if (typeof navigator !== "undefined" && "mediaSession" in navigator) {
+      try {
+        navigator.mediaSession.metadata = null;
+      } catch {
+        /* ignore */
+      }
+    }
+  }, []);
+
   const isCurrent = useCallback(
     (id: string) => current?.id === id,
     [current],
@@ -196,6 +220,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
       prev,
       seek,
       setVolume,
+      close,
       isCurrent,
     }),
     [

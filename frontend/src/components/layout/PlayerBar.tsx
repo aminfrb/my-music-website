@@ -8,6 +8,7 @@ import {
   SkipForward,
   Volume2,
   VolumeX,
+  X,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { formatDuration } from "@/lib/format";
@@ -27,6 +28,7 @@ export function PlayerBar() {
     prev,
     seek,
     setVolume,
+    close,
     index,
     queue,
   } = usePlayer();
@@ -141,6 +143,17 @@ export function PlayerBar() {
             className="w-24"
           />
         </div>
+
+        {/* Close — stops playback and dismisses the bar */}
+        <button
+          type="button"
+          onClick={close}
+          aria-label={t("closePlayer")}
+          title={t("closePlayer")}
+          className="ltr:ml-1 rtl:mr-1 grid h-9 w-9 shrink-0 place-items-center rounded-full text-text-muted transition-colors hover:bg-surface hover:text-text cursor-pointer"
+        >
+          <X className="h-5 w-5" />
+        </button>
       </div>
     </div>
   );
