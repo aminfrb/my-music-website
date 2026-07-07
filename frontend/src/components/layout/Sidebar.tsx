@@ -10,9 +10,9 @@ import {
   Upload,
   Bell,
   Shield,
-  Music4,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { SpiderWeb } from "@/components/ui/SpiderWeb";
 import { useLocale } from "@/providers/LocaleProvider";
 import { useAuth } from "@/providers/AuthProvider";
 import type { Dict } from "@/i18n/dictionaries";
@@ -78,8 +78,8 @@ export function Brand({ onClick }: { onClick?: () => void }) {
   const { t } = useLocale();
   return (
     <Link href="/" onClick={onClick} className="flex items-center gap-2.5">
-      <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-brand shadow-glow">
-        <Music4 className="h-5 w-5 text-white" />
+      <span className="relative grid h-9 w-9 place-items-center overflow-hidden rounded-xl bg-gradient-brand shadow-glow">
+        <SpiderWeb className="h-8 w-8 text-white/90" spokes={10} rings={4} strokeWidth={1.4} />
       </span>
       <span className="font-heading text-xl tracking-wide text-text">{t("appName")}</span>
     </Link>
