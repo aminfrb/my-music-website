@@ -43,6 +43,7 @@ function CreatePlaylistModal({ onClose }: { onClose: () => void }) {
           <select
             value={visibility}
             onChange={(e) => setVisibility(e.target.value as typeof visibility)}
+            aria-label={t("visibility")}
             className="w-full rounded-xl border border-border bg-bg-elevated px-4 py-2.5 text-text focus:border-primary/70 focus:outline-none"
           >
             <option value="public">{t("public")}</option>

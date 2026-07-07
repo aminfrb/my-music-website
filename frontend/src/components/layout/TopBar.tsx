@@ -79,6 +79,9 @@ function UserMenu() {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
+        aria-label={t("nav_profile")}
+        aria-haspopup="menu"
+        aria-expanded={open}
         className="flex items-center gap-2 rounded-full p-0.5 transition-transform hover:scale-105 cursor-pointer"
       >
         <Avatar name={user.displayName} src={user.avatarUrl} id={user.id} size={36} />
@@ -86,8 +89,10 @@ function UserMenu() {
       {open && (
         <>
           <button
+            type="button"
             className="fixed inset-0 z-40 cursor-default"
-            aria-hidden
+            aria-label="Close menu"
+            tabIndex={-1}
             onClick={() => setOpen(false)}
           />
           <div className="absolute z-50 mt-2 w-52 overflow-hidden rounded-xl border border-border bg-bg-elevated shadow-card ltr:right-0 rtl:left-0">
@@ -159,8 +164,10 @@ function MobileMenu() {
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <button
+            type="button"
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            aria-hidden
+            aria-label="Close menu"
+            tabIndex={-1}
             onClick={() => setOpen(false)}
           />
           <div className="absolute inset-y-0 w-72 max-w-[80vw] space-y-6 bg-bg-elevated p-5 shadow-card ltr:left-0 rtl:right-0">

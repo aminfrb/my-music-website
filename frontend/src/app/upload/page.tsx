@@ -325,6 +325,7 @@ function UploadContent() {
                 <select
                   value={meta.genreId}
                   onChange={(e) => setMeta((m) => ({ ...m, genreId: e.target.value }))}
+                  aria-label={t("genre")}
                   className="w-full rounded-xl border border-border bg-bg-elevated px-4 py-2.5 text-text focus:border-primary/70 focus:outline-none"
                 >
                   <option value="">—</option>
@@ -341,6 +342,7 @@ function UploadContent() {
                   onChange={(e) =>
                     setMeta((m) => ({ ...m, visibility: e.target.value as "public" | "private" }))
                   }
+                  aria-label={t("visibility")}
                   className="w-full rounded-xl border border-border bg-bg-elevated px-4 py-2.5 text-text focus:border-primary/70 focus:outline-none"
                 >
                   <option value="public">{t("public")}</option>

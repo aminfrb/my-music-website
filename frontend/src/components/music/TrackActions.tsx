@@ -204,6 +204,7 @@ function ReportModal({
             <select
               value={reason}
               onChange={(e) => setReason(e.target.value as ReportReason)}
+              aria-label={t("reportReason")}
               className="w-full rounded-xl border border-border bg-bg-elevated px-4 py-2.5 text-text focus:border-primary/70 focus:outline-none"
             >
               {reasons.map((r) => (

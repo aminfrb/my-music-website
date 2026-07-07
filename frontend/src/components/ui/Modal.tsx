@@ -26,8 +26,10 @@ export function Modal({
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4">
       <button
+        type="button"
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        aria-hidden
+        aria-label="Close"
+        tabIndex={-1}
         onClick={onClose}
       />
       <div className="relative z-10 w-full max-w-md rounded-t-card border border-border bg-bg-elevated p-6 shadow-card sm:rounded-card">
