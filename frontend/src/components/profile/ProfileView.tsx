@@ -1,11 +1,13 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { BadgeCheck, Pencil } from "lucide-react";
+import { BadgeCheck, MessageCircle, Pencil } from "lucide-react";
 import { gql } from "@/lib/graphql";
 import {
   FOLLOW_USER,
+  SET_ALLOW_MESSAGES,
   UNFOLLOW_USER,
   UPDATE_PROFILE,
   USER_PROFILE,
@@ -93,13 +95,23 @@ export function ProfileView({ userId }: { userId: string }) {
               {t("editProfile")}
             </Button>
           ) : me ? (
-            <Button
-              variant={user.isFollowedByMe ? "outline" : "primary"}
-              loading={followMutation.isPending}
-              onClick={() => followMutation.mutate(!user.isFollowedByMe)}
-            >
-              {user.isFollowedByMe ? t("unfollow") : t("follow")}
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                variant={user.isFollowedByMe ? "outline" : "primary"}
+                loading={followMutation.isPending}
+                onClick={() => followMutation.mutate(!user.isFollowedByMe)}
+              >
+                {user.isFollowedByMe ? t("unfollow") : t("follow")}
+              </Button>
+              {user.allowMessages !== false && (
+                <Link href={`/messages/${user.id}`}>
+                  <Button variant="outline">
+                    <MessageCircle className="h-4 w-4" />
+                    {t("msgButton")}
+                  </Button>
+                </Link>
+              )}
+            </div>
           ) : null}
         </div>
       </section>
@@ -140,9 +152,15 @@ function EditProfileModal({
   const { t } = useLocale();
   const [displayName, setDisplayName] = useState(user.displayName);
   const [bio, setBio] = useState(user.bio ?? "");
+  const [allowMessages, setAllowMessages] = useState(user.allowMessages !== false);
 
   const mutation = useMutation({
-    mutationFn: () => gql(UPDATE_PROFILE, { input: { displayName, bio } }),
+    mutationFn: async () => {
+      await gql(UPDATE_PROFILE, { input: { displayName, bio } });
+      if (allowMessages !== (user.allowMessages !== false)) {
+        await gql(SET_ALLOW_MESSAGES, { allow: allowMessages });
+      }
+    },
     onSuccess: onSaved,
   });
 
@@ -155,6 +173,15 @@ function EditProfileModal({
         <Field label={t("bio")}>
           <Textarea value={bio} onChange={(e) => setBio(e.target.value)} />
         </Field>
+        <label className="flex cursor-pointer items-center justify-between gap-3 rounded-xl border border-border bg-bg-elevated px-4 py-3">
+          <span className="text-sm text-text">{t("msgAllowLabel")}</span>
+          <input
+            type="checkbox"
+            checked={allowMessages}
+            onChange={(e) => setAllowMessages(e.target.checked)}
+            className="h-5 w-5 accent-primary"
+          />
+        </label>
         <Button
           className="w-full"
           loading={mutation.isPending}

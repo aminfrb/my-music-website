@@ -72,6 +72,37 @@ export interface User {
   totalPlayCount: number;
   totalReactions: number;
   isFollowedByMe: boolean;
+  allowMessages?: boolean;
+}
+
+export interface Message {
+  id: string;
+  conversationId: string;
+  body: string;
+  isRead: boolean;
+  /** True when the signed-in user sent it. */
+  mine: boolean;
+  createdAt: string;
+  sender?: User;
+  recipient?: User;
+}
+
+export interface Conversation {
+  id: string;
+  otherUser: User;
+  lastMessage: string;
+  lastMessageAt: string;
+  unreadCount: number;
+}
+
+/** Compact payload delivered over the WebSocket for `message:new`. */
+export interface RealtimeMessage {
+  id: string;
+  conversationId: string;
+  senderId: string;
+  recipientId: string;
+  body: string;
+  createdAt: string;
 }
 
 export interface ReactionCount {

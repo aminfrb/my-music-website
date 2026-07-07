@@ -19,6 +19,7 @@ export const USER_FIELDS = /* GraphQL */ `
     totalPlayCount
     totalReactions
     isFollowedByMe
+    allowMessages
   }
 `;
 
@@ -469,6 +470,95 @@ export const ADMIN_REVIEW_MUSIC = /* GraphQL */ `
     adminReviewMusic(musicId: $musicId, action: $action, note: $note) {
       id
       status
+    }
+  }
+`;
+
+/* ── Direct messages ─────────────────────────────────────────────── */
+
+export const CONVERSATIONS = /* GraphQL */ `
+  query Conversations {
+    conversations {
+      id
+      lastMessage
+      lastMessageAt
+      unreadCount
+      otherUser {
+        id
+        displayName
+        avatarUrl
+        isVerifiedArtist
+      }
+    }
+  }
+`;
+
+export const UNREAD_MESSAGES = /* GraphQL */ `
+  query UnreadMessages {
+    unreadMessageCount
+  }
+`;
+
+export const MESSAGES_WITH = /* GraphQL */ `
+  query MessagesWith($userId: ID!, $first: Int, $after: String) {
+    messagesWith(userId: $userId, first: $first, after: $after) {
+      nodes {
+        id
+        body
+        mine
+        isRead
+        createdAt
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      totalCount
+    }
+  }
+`;
+
+export const MESSAGE_PEER = /* GraphQL */ `
+  query MessagePeer($id: ID!) {
+    user(id: $id) {
+      id
+      displayName
+      avatarUrl
+      isVerifiedArtist
+      allowMessages
+    }
+  }
+`;
+
+export const SEND_MESSAGE = /* GraphQL */ `
+  mutation SendMessage($toUserId: ID!, $body: String!) {
+    sendMessage(toUserId: $toUserId, body: $body) {
+      id
+      body
+      mine
+      isRead
+      createdAt
+    }
+  }
+`;
+
+export const MARK_CONVERSATION_READ = /* GraphQL */ `
+  mutation MarkConversationRead($userId: ID!) {
+    markConversationRead(userId: $userId)
+  }
+`;
+
+export const CAN_MESSAGE = /* GraphQL */ `
+  query CanMessage($userId: ID!) {
+    canMessage(userId: $userId)
+  }
+`;
+
+export const SET_ALLOW_MESSAGES = /* GraphQL */ `
+  mutation SetAllowMessages($allow: Boolean!) {
+    setAllowMessages(allow: $allow) {
+      id
+      allowMessages
     }
   }
 `;

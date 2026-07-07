@@ -4,9 +4,20 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { Bell, LogOut, Menu, Moon, Search, Sun, User as UserIcon, X, Languages } from "lucide-react";
+import {
+  Bell,
+  LogOut,
+  Menu,
+  MessageCircle,
+  Moon,
+  Search,
+  Sun,
+  User as UserIcon,
+  X,
+  Languages,
+} from "lucide-react";
 import { gql } from "@/lib/graphql";
-import { UNREAD_COUNT } from "@/lib/queries";
+import { UNREAD_COUNT, UNREAD_MESSAGES } from "@/lib/queries";
 import { useLocale } from "@/providers/LocaleProvider";
 import { useTheme } from "@/providers/ThemeProvider";
 import { useAuth } from "@/providers/AuthProvider";
@@ -64,6 +75,33 @@ function NotificationsBell() {
       aria-label="Notifications"
     >
       <Bell className="h-5 w-5" />
+      {count > 0 && (
+        <span className="absolute top-1 grid h-4 min-w-4 place-items-center rounded-full bg-accent px-1 text-[10px] font-bold text-white ltr:right-1 rtl:left-1">
+          {count > 9 ? "9+" : count}
+        </span>
+      )}
+    </Link>
+  );
+}
+
+function MessagesBell() {
+  const { user } = useAuth();
+  const { t } = useLocale();
+  const { data } = useQuery({
+    queryKey: ["unreadMessages"],
+    queryFn: () => gql<{ unreadMessageCount: number }>(UNREAD_MESSAGES),
+    enabled: Boolean(user),
+    refetchInterval: 60_000,
+  });
+  if (!user) return null;
+  const count = data?.unreadMessageCount ?? 0;
+  return (
+    <Link
+      href="/messages"
+      aria-label={t("nav_messages")}
+      className="relative grid h-10 w-10 place-items-center rounded-full text-text-muted transition-colors hover:bg-surface hover:text-text"
+    >
+      <MessageCircle className="h-5 w-5" />
       {count > 0 && (
         <span className="absolute top-1 grid h-4 min-w-4 place-items-center rounded-full bg-accent px-1 text-[10px] font-bold text-white ltr:right-1 rtl:left-1">
           {count > 9 ? "9+" : count}
@@ -220,6 +258,7 @@ export function TopBar() {
       <div className="ltr:ml-auto rtl:mr-auto flex items-center gap-2">
         <ThemeToggle />
         <LocaleToggle />
+        <MessagesBell />
         <NotificationsBell />
         <UserMenu />
       </div>

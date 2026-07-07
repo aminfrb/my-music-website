@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "./ThemeProvider";
 import { LocaleProvider } from "./LocaleProvider";
 import { AuthProvider } from "./AuthProvider";
+import { MessagesProvider } from "./MessagesProvider";
 import { PlayerProvider } from "./PlayerProvider";
 
 export function Providers({ children }: { children: ReactNode }) {
@@ -26,7 +27,9 @@ export function Providers({ children }: { children: ReactNode }) {
       <ThemeProvider>
         <LocaleProvider>
           <AuthProvider>
-            <PlayerProvider>{children}</PlayerProvider>
+            <MessagesProvider>
+              <PlayerProvider>{children}</PlayerProvider>
+            </MessagesProvider>
           </AuthProvider>
         </LocaleProvider>
       </ThemeProvider>

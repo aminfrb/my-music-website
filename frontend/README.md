@@ -17,6 +17,10 @@ the Spidermelody GraphQL backend.
 - 🔎 Discovery home (trending, fresh, popular, hidden gems, playlists, genres) with infinite
   scroll, personalized **For You**, categorized **search**, **library**/playlists,
   **Divar-style step-by-step upload**, notifications, profiles, and an **admin** dashboard.
+- 💬 **Realtime direct messages** — chat with other users over a native
+  WebSocket (typing indicators, unread badges, live delivery). Each profile can
+  turn messaging on/off in **Edit profile**; the Message button and sending are
+  blocked when a user opts out.
 - 🔐 Email + password auth with silent access-token refresh.
 
 ## Prerequisites

@@ -9,6 +9,7 @@ import {
   Library,
   Upload,
   Bell,
+  MessageCircle,
   Shield,
 } from "lucide-react";
 import { cn } from "@/lib/cn";
@@ -31,6 +32,7 @@ const NAV: NavItem[] = [
   { href: "/search", labelKey: "nav_search", icon: Search },
   { href: "/library", labelKey: "nav_library", icon: Library, auth: true },
   { href: "/upload", labelKey: "nav_upload", icon: Upload, auth: true },
+  { href: "/messages", labelKey: "nav_messages", icon: MessageCircle, auth: true },
   { href: "/notifications", labelKey: "nav_notifications", icon: Bell, auth: true },
   { href: "/admin", labelKey: "nav_admin", icon: Shield, admin: true },
 ];
