@@ -138,6 +138,20 @@ input[type="range"]::-moz-range-thumb {
   background: var(--color-text);
 }
 
+/* Gentle sway for the decorative corner spider */
+@keyframes spider-sway {
+  0%,
+  100% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(4deg);
+  }
+}
+.spider-sway {
+  animation: spider-sway 6s ease-in-out infinite;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
