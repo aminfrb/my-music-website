@@ -19,6 +19,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   // lang/dir are set client-side by LocaleProvider once the stored locale loads.
   return (
     <html lang="en" dir="ltr" suppressHydrationWarning>
+      <head>
+        {/* Apply the saved theme before first paint to avoid a flash.
+            Keep the key in sync with ThemeProvider. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "(function(){try{var t=localStorage.getItem('spidermelody.theme');if(t!=='light'&&t!=='dark')t='dark';document.documentElement.setAttribute('data-theme',t);}catch(e){}})();",
+          }}
+        />
+      </head>
       <body>
         <Providers>
           <AppShell>{children}</AppShell>

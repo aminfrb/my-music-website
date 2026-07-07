@@ -48,6 +48,25 @@
   color-scheme: dark;
 }
 
+/* Light theme — toggled by setting data-theme="light" on <html>. Only the
+   surface/text tokens change; the brand/accent/play colors stay identical so
+   the palette still reads as one system. */
+:root[data-theme="light"] {
+  --color-bg: #f6f6fb;
+  --color-bg-elevated: #ffffff;
+  --color-surface: #eeeef5;
+  --color-surface-hover: #e3e3ef;
+  --color-border: #dcdce8;
+
+  --color-text: #16161f;
+  --color-text-muted: #55556e;
+  --color-text-faint: #8a8aa2;
+
+  --shadow-glow: rgba(139, 92, 246, 0.25);
+
+  color-scheme: light;
+}
+
 /* When the document is Persian, prefer Vazirmatn for headings too (Righteous has
    no Persian glyphs). */
 :root[dir="rtl"] {

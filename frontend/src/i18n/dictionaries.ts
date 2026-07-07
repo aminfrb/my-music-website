@@ -17,6 +17,9 @@ const en = {
   nav_settings: "Settings",
   nav_discover: "Discover",
   nav_yourMusic: "Your Music",
+  theme: "Theme",
+  themeDark: "Dark mode",
+  themeLight: "Light mode",
 
   // auth
   login: "Log in",
@@ -213,6 +216,9 @@ const fa: Record<keyof typeof en, string> = {
   nav_settings: "تنظیمات",
   nav_discover: "کشف",
   nav_yourMusic: "موزیک تو",
+  theme: "پوسته",
+  themeDark: "حالت تیره",
+  themeLight: "حالت روشن",
 
   login: "ورود",
   logout: "خروج",

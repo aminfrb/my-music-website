@@ -4,10 +4,11 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import { Bell, LogOut, Menu, Search, User as UserIcon, X, Languages } from "lucide-react";
+import { Bell, LogOut, Menu, Moon, Search, Sun, User as UserIcon, X, Languages } from "lucide-react";
 import { gql } from "@/lib/graphql";
 import { UNREAD_COUNT } from "@/lib/queries";
 import { useLocale } from "@/providers/LocaleProvider";
+import { useTheme } from "@/providers/ThemeProvider";
 import { useAuth } from "@/providers/AuthProvider";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
@@ -24,6 +25,24 @@ function LocaleToggle() {
     >
       <Languages className="h-4 w-4" />
       <span className="font-medium">{locale === "en" ? "EN" : "فا"}</span>
+    </button>
+  );
+}
+
+function ThemeToggle() {
+  const { theme, toggleTheme } = useTheme();
+  const { t } = useLocale();
+  const isDark = theme === "dark";
+  const label = isDark ? t("themeLight") : t("themeDark");
+  return (
+    <button
+      type="button"
+      onClick={toggleTheme}
+      aria-label={label}
+      title={label}
+      className="grid h-9 w-9 place-items-center rounded-full border border-border text-text-muted transition-colors hover:border-primary/50 hover:text-text cursor-pointer"
+    >
+      {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
     </button>
   );
 }
@@ -199,6 +218,7 @@ export function TopBar() {
       </div>
       <SearchBar />
       <div className="ltr:ml-auto rtl:mr-auto flex items-center gap-2">
+        <ThemeToggle />
         <LocaleToggle />
         <NotificationsBell />
         <UserMenu />
