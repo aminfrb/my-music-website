@@ -81,7 +81,7 @@ function UserMenu() {
         onClick={() => setOpen((v) => !v)}
         aria-label={t("nav_profile")}
         aria-haspopup="menu"
-        aria-expanded={open}
+        aria-expanded={open ? "true" : "false"}
         className="flex items-center gap-2 rounded-full p-0.5 transition-transform hover:scale-105 cursor-pointer"
       >
         <Avatar name={user.displayName} src={user.avatarUrl} id={user.id} size={36} />
