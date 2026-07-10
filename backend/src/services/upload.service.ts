@@ -19,6 +19,7 @@ import { normalizeTag, normalizeText, buildNormalized } from "../utils/text";
 const metadataSchema = z.object({
   title: z.string().min(1).max(150).optional(),
   artistName: z.string().min(1).max(120).optional(),
+  caption: z.string().max(280).nullish(),
   description: z.string().max(2000).nullish(),
   genreId: z.string().optional(),
   tags: z.array(z.string().min(1).max(30)).max(15).optional(),
@@ -185,6 +186,7 @@ export const uploadService = {
     session.metadata = {
       title: data.title ?? session.metadata.title ?? null,
       artistName: data.artistName ?? session.metadata.artistName ?? null,
+      caption: data.caption ?? session.metadata.caption ?? null,
       description: data.description ?? session.metadata.description ?? null,
       genre: data.genreId ? new Types.ObjectId(data.genreId) : session.metadata.genre ?? null,
       tags,
@@ -210,6 +212,7 @@ export const uploadService = {
     const music = await Music.create({
       title: m.title,
       artistName: m.artistName,
+      caption: m.caption ?? null,
       description: m.description ?? null,
       genre: m.genre,
       tags: m.tags,

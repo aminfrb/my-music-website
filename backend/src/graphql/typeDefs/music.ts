@@ -25,6 +25,7 @@ export const musicTypeDefs = /* GraphQL */ `
     id: ID!
     title: String!
     artistName: String!
+    caption: String
     description: String
     duration: Int!
     fileSize: Int!
@@ -67,6 +68,7 @@ export const musicTypeDefs = /* GraphQL */ `
   input UpdateMusicInput {
     title: String
     artistName: String
+    caption: String
     description: String
     genreId: ID
     tags: [String!]

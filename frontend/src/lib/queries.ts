@@ -28,6 +28,7 @@ export const MUSIC_FIELDS = /* GraphQL */ `
     id
     title
     artistName
+    caption
     description
     duration
     tags

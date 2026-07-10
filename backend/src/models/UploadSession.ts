@@ -33,6 +33,7 @@ export interface IUploadSession {
   metadata: {
     title?: string | null;
     artistName?: string | null;
+    caption?: string | null;
     description?: string | null;
     genre?: Types.ObjectId | null;
     tags: string[];
@@ -71,6 +72,7 @@ const schema = new Schema<IUploadSession>(
     metadata: {
       title: { type: String, default: null },
       artistName: { type: String, default: null },
+      caption: { type: String, default: null },
       description: { type: String, default: null },
       genre: { type: Schema.Types.ObjectId, ref: "Genre", default: null },
       tags: { type: [String], default: [] },

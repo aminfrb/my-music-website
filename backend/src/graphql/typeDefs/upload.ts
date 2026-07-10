@@ -22,6 +22,7 @@ export const uploadTypeDefs = /* GraphQL */ `
   type UploadMetadata {
     title: String
     artistName: String
+    caption: String
     description: String
     genre: Genre
     tags: [String!]!
@@ -38,6 +39,7 @@ export const uploadTypeDefs = /* GraphQL */ `
   input UploadMetadataInput {
     title: String
     artistName: String
+    caption: String
     description: String
     genreId: ID
     tags: [String!]

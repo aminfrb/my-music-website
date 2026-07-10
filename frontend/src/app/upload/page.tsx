@@ -41,7 +41,7 @@ function Stepper({ step }: { step: Step }) {
     "uploadStepReview",
   ];
   return (
-    <ol className="mb-8 flex items-center gap-2">
+    <ol className="mb-6 flex items-center gap-2">
       {labels.map((label, i) => {
         const done = i < step;
         const active = i === step;
@@ -94,6 +94,7 @@ function UploadContent() {
   const [meta, setMeta] = useState({
     title: "",
     artistName: "",
+    caption: "",
     genreId: "",
     tags: "",
     description: "",
@@ -165,6 +166,7 @@ function UploadContent() {
         input: {
           title: meta.title,
           artistName: meta.artistName,
+          caption: meta.caption || undefined,
           description: meta.description || undefined,
           genreId: meta.genreId || undefined,
           tags,
@@ -225,6 +227,7 @@ function UploadContent() {
     setMeta({
       title: "",
       artistName: "",
+      caption: "",
       genreId: "",
       tags: "",
       description: "",
@@ -235,8 +238,8 @@ function UploadContent() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <h1 className="mb-2 font-heading text-4xl tracking-wide text-text">{t("uploadTitle")}</h1>
-      <p className="mb-8 text-text-muted">{t("heroSubtitle")}</p>
+      <h1 className="mb-2 font-heading text-3xl tracking-wide text-text">{t("uploadTitle")}</h1>
+      <p className="mb-6 text-text-muted">{t("heroSubtitle")}</p>
 
       {!done && <Stepper step={step} />}
 
@@ -249,7 +252,7 @@ function UploadContent() {
           <span className="grid h-16 w-16 place-items-center rounded-full bg-play/15 text-play">
             <Check className="h-8 w-8" />
           </span>
-          <h2 className="font-heading text-2xl tracking-wide text-text">{t("uploadDone")}</h2>
+          <h2 className="font-heading text-xl tracking-wide text-text">{t("uploadDone")}</h2>
           <p className="max-w-sm text-sm text-text-muted">{t("uploadPendingNote")}</p>
           <div className="mt-2 flex gap-3">
             <Button onClick={reset}>{t("uploadAnother")}</Button>
@@ -259,7 +262,7 @@ function UploadContent() {
           </div>
         </div>
       ) : (
-      <div className="rounded-card border border-border bg-surface/40 p-6">
+      <div className="rounded-card border border-border bg-surface/40 p-5">
         {/* STEP 0 — audio */}
         {step === 0 && (
           <div>
@@ -277,7 +280,7 @@ function UploadContent() {
               type="button"
               disabled={busy}
               onClick={() => audioInput.current?.click()}
-              className="flex w-full flex-col items-center gap-4 rounded-xl border-2 border-dashed border-border py-16 text-center transition-colors hover:border-primary/60 hover:bg-surface/60 disabled:opacity-70 cursor-pointer"
+              className="flex w-full flex-col items-center gap-4 rounded-xl border-2 border-dashed border-border py-12 text-center transition-colors hover:border-primary/60 hover:bg-surface/60 disabled:opacity-70 cursor-pointer"
             >
               {busy ? (
                 <>
@@ -320,13 +323,21 @@ function UploadContent() {
                 onChange={(e) => setMeta((m) => ({ ...m, artistName: e.target.value }))}
               />
             </Field>
+            <Field label={t("caption")} hint={t("captionHint")}>
+              <Input
+                value={meta.caption}
+                maxLength={280}
+                placeholder={t("captionPlaceholder")}
+                onChange={(e) => setMeta((m) => ({ ...m, caption: e.target.value }))}
+              />
+            </Field>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Field label={t("genre")}>
                 <select
                   value={meta.genreId}
                   onChange={(e) => setMeta((m) => ({ ...m, genreId: e.target.value }))}
                   aria-label={t("genre")}
-                  className="w-full rounded-xl border border-border bg-bg-elevated px-4 py-2.5 text-text focus:border-primary/70 focus:outline-none"
+                  className="w-full rounded-xl border border-border bg-bg-elevated px-3.5 py-2 text-sm text-text focus:border-primary/70 focus:outline-none"
                 >
                   <option value="">—</option>
                   {genres.map((g) => (
@@ -343,7 +354,7 @@ function UploadContent() {
                     setMeta((m) => ({ ...m, visibility: e.target.value as "public" | "private" }))
                   }
                   aria-label={t("visibility")}
-                  className="w-full rounded-xl border border-border bg-bg-elevated px-4 py-2.5 text-text focus:border-primary/70 focus:outline-none"
+                  className="w-full rounded-xl border border-border bg-bg-elevated px-3.5 py-2 text-sm text-text focus:border-primary/70 focus:outline-none"
                 >
                   <option value="public">{t("public")}</option>
                   <option value="private">{t("private")}</option>
@@ -392,7 +403,7 @@ function UploadContent() {
               type="button"
               disabled={busy}
               onClick={() => coverInput.current?.click()}
-              className="flex w-full flex-col items-center gap-3 overflow-hidden rounded-xl border-2 border-dashed border-border py-10 text-center transition-colors hover:border-primary/60 hover:bg-surface/60 cursor-pointer"
+              className="flex w-full flex-col items-center gap-3 overflow-hidden rounded-xl border-2 border-dashed border-border py-8 text-center transition-colors hover:border-primary/60 hover:bg-surface/60 cursor-pointer"
             >
               {coverPreview ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -438,10 +449,13 @@ function UploadContent() {
                 )}
               </div>
               <div className="min-w-0">
-                <p className="truncate font-heading text-2xl tracking-wide text-text">
+                <p className="truncate font-heading text-xl tracking-wide text-text">
                   {meta.title || "—"}
                 </p>
                 <p className="truncate text-text-muted">{meta.artistName}</p>
+                {meta.caption.trim() && (
+                  <p className="mt-1 line-clamp-2 text-sm text-text-muted">{meta.caption}</p>
+                )}
                 <p className="mt-1 text-sm text-text-faint">
                   {genres.find((g) => g.id === meta.genreId)?.name ?? ""}
                   {audioInfo?.duration ? ` · ${formatDuration(audioInfo.duration)}` : ""}

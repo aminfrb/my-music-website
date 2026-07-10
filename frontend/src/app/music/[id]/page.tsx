@@ -50,7 +50,7 @@ export default function MusicPage({ params }: { params: { id: string } }) {
   const topEmoji = REACTIONS.find((r) => r.type === topReaction?.type)?.emoji;
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-8">
       <section className="flex flex-col gap-6 sm:flex-row sm:items-end">
         <div className="w-full max-w-[260px] shrink-0 self-center sm:self-auto">
           <div className="overflow-hidden rounded-card shadow-card">
@@ -65,7 +65,7 @@ export default function MusicPage({ params }: { params: { id: string } }) {
           >
             {music.genre.name}
           </Link>
-          <h1 className="mt-1 font-heading text-4xl leading-tight tracking-wide text-text sm:text-5xl">
+          <h1 className="mt-1 font-heading text-3xl leading-tight tracking-wide text-text sm:text-4xl">
             {music.title}
           </h1>
 
@@ -89,6 +89,12 @@ export default function MusicPage({ params }: { params: { id: string } }) {
             {music.publishedAt ? formatRelativeDate(music.publishedAt, locale) : ""} ·{" "}
             {formatDuration(music.duration)}
           </p>
+
+          {music.caption && (
+            <p className="mt-3 max-w-xl text-[15px] leading-relaxed text-text-muted">
+              {music.caption}
+            </p>
+          )}
 
           <div className="mt-5 flex items-center gap-3">
             <Button
@@ -119,7 +125,7 @@ export default function MusicPage({ params }: { params: { id: string } }) {
       </section>
 
       <section className="space-y-4">
-        <h2 className="font-heading text-2xl tracking-wide text-text">{t("react")}</h2>
+        <h2 className="font-heading text-xl tracking-wide text-text">{t("react")}</h2>
         <ReactionBar music={music} />
       </section>
 
