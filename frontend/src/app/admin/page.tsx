@@ -45,7 +45,7 @@ function OverviewCards() {
       {cards.map(({ icon: Icon, label, value }) => (
         <div key={label} className="rounded-card border border-border bg-surface/40 p-4">
           <Icon className="h-5 w-5 text-primary" />
-          <p className="mt-3 font-heading text-2xl text-text">{formatCount(value, locale)}</p>
+          <p className="mt-3 font-heading text-xl text-text">{formatCount(value, locale)}</p>
           <p className="text-xs text-text-muted">{t(label)}</p>
         </div>
       ))}
@@ -129,16 +129,16 @@ function ModerationQueue() {
 function AdminContent() {
   const { t } = useLocale();
   return (
-    <div className="space-y-10">
-      <h1 className="font-heading text-4xl tracking-wide text-text">{t("adminDashboard")}</h1>
+    <div className="space-y-8">
+      <h1 className="font-heading text-3xl tracking-wide text-text">{t("adminDashboard")}</h1>
 
       <section className="space-y-4">
-        <h2 className="font-heading text-2xl tracking-wide text-text">{t("overview")}</h2>
+        <h2 className="font-heading text-xl tracking-wide text-text">{t("overview")}</h2>
         <OverviewCards />
       </section>
 
       <section className="space-y-4">
-        <h2 className="font-heading text-2xl tracking-wide text-text">{t("moderationQueue")}</h2>
+        <h2 className="font-heading text-xl tracking-wide text-text">{t("moderationQueue")}</h2>
         <ModerationQueue />
       </section>
     </div>

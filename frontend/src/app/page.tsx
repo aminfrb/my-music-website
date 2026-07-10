@@ -35,7 +35,7 @@ function Hero() {
         <p className="mb-3 inline-block rounded-full border border-border bg-bg/40 px-3 py-1 text-xs text-text-muted">
           {t("tagline")}
         </p>
-        <h1 className="font-heading text-4xl leading-tight tracking-wide text-text sm:text-5xl">
+        <h1 className="font-heading text-3xl leading-tight tracking-wide text-text sm:text-4xl">
           {t("heroTitle")}
         </h1>
         <p className="mt-4 text-base text-text-muted sm:text-lg">{t("heroSubtitle")}</p>
@@ -136,7 +136,7 @@ export default function HomePage() {
   });
 
   return (
-    <div className="space-y-12">
+    <div className="space-y-8">
       <Hero />
 
       {isLoading && !data ? (

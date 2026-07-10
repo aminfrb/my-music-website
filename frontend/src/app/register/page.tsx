@@ -58,7 +58,7 @@ export default function RegisterPage() {
 
       <form
         onSubmit={submit}
-        className="space-y-4 rounded-card border border-border bg-surface/50 p-6"
+        className="space-y-4 rounded-card border border-border bg-surface/50 p-5"
       >
         <Field label={t("displayName")} htmlFor="name">
           <Input id="name" required value={form.displayName} onChange={set("displayName")} />

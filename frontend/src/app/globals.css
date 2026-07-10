@@ -39,7 +39,7 @@
 
   /* Effects */
   --shadow-glow: rgba(139, 92, 246, 0.35);
-  --radius-card: 18px;
+  --radius-card: 14px;
 
   /* Fonts */
   --font-heading: "Righteous", "Vazirmatn", system-ui, sans-serif;

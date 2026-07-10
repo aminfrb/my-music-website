@@ -58,7 +58,7 @@ export default function PlaylistPage({ params }: { params: { id: string } }) {
   const isOwner = user?.id === playlist.owner.id;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <section className="flex flex-col gap-6 sm:flex-row sm:items-end">
         <div className="w-full max-w-[220px] shrink-0 self-center sm:self-auto">
           <div className="overflow-hidden rounded-card shadow-card">
@@ -72,7 +72,7 @@ export default function PlaylistPage({ params }: { params: { id: string } }) {
         </div>
         <div className="min-w-0 flex-1">
           <p className="text-sm font-medium text-text-muted">{t("cat_playlists")}</p>
-          <h1 className="mt-1 font-heading text-4xl tracking-wide text-text sm:text-5xl">
+          <h1 className="mt-1 font-heading text-3xl tracking-wide text-text sm:text-4xl">
             {playlist.name}
           </h1>
           {playlist.description && (

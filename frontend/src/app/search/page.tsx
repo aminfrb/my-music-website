@@ -39,7 +39,7 @@ function SearchContent() {
     !res.tags.length;
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -66,7 +66,7 @@ function SearchContent() {
       ) : empty ? (
         <EmptyState title={`${t("noResults")} — “${q}”`} />
       ) : (
-        <div className="space-y-10">
+        <div className="space-y-8">
           {res!.genres.length > 0 && (
             <section>
               <SectionHeader title={t("cat_genres")} />

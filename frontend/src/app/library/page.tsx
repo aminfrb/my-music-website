@@ -75,9 +75,9 @@ function LibraryContent() {
   const playlists = data?.myPlaylists.nodes ?? [];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="font-heading text-4xl tracking-wide text-text">{t("nav_library")}</h1>
+        <h1 className="font-heading text-3xl tracking-wide text-text">{t("nav_library")}</h1>
         <Button onClick={() => setCreating(true)}>
           <Plus className="h-5 w-5" />
           {t("createPlaylist")}

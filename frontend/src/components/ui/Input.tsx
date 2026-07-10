@@ -4,7 +4,7 @@ import { forwardRef, type InputHTMLAttributes, type TextareaHTMLAttributes } fro
 import { cn } from "@/lib/cn";
 
 const base =
-  "w-full rounded-xl border border-border bg-bg-elevated px-4 py-2.5 text-text placeholder:text-text-faint " +
+  "w-full rounded-lg border border-border bg-bg-elevated px-3.5 py-2 text-sm text-text placeholder:text-text-faint " +
   "transition-colors focus:border-primary/70 focus:outline-none focus:ring-2 focus:ring-primary/30";
 
 export const Input = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(
@@ -17,7 +17,7 @@ export const Textarea = forwardRef<
   HTMLTextAreaElement,
   TextareaHTMLAttributes<HTMLTextAreaElement>
 >(function Textarea({ className, ...rest }, ref) {
-  return <textarea ref={ref} className={cn(base, "min-h-[96px] resize-y", className)} {...rest} />;
+  return <textarea ref={ref} className={cn(base, "min-h-[84px] resize-y", className)} {...rest} />;
 });
 
 export function Field({
@@ -32,7 +32,7 @@ export function Field({
   hint?: string;
 }) {
   return (
-    <label htmlFor={htmlFor} className="block space-y-1.5">
+    <label htmlFor={htmlFor} className="block space-y-1">
       <span className="text-sm font-medium text-text-muted">{label}</span>
       {children}
       {hint && <span className="block text-xs text-text-faint">{hint}</span>}

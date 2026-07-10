@@ -17,7 +17,7 @@ export function SectionHeader({
   const Chevron = dir === "rtl" ? ChevronLeft : ChevronRight;
   return (
     <div className="mb-4 flex items-end justify-between gap-4">
-      <h2 className="font-heading text-2xl tracking-wide text-text">{title}</h2>
+      <h2 className="font-heading text-xl tracking-wide text-text">{title}</h2>
       {href && (
         <Link
           href={href}

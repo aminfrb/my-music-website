@@ -61,7 +61,7 @@ export function ProfileView({ userId }: { userId: string }) {
   const tracks = user.music.nodes;
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-8">
       <section className="flex flex-col items-center gap-6 text-center sm:flex-row sm:items-end sm:text-start">
         <Avatar
           name={user.displayName}
@@ -72,7 +72,7 @@ export function ProfileView({ userId }: { userId: string }) {
         />
         <div className="min-w-0 flex-1">
           <div className="flex items-center justify-center gap-2 sm:justify-start">
-            <h1 className="font-heading text-4xl tracking-wide text-text">{user.displayName}</h1>
+            <h1 className="font-heading text-3xl tracking-wide text-text">{user.displayName}</h1>
             {user.isVerifiedArtist && <BadgeCheck className="h-6 w-6 text-accent-2" />}
           </div>
           {user.bio && <p className="mt-2 text-text-muted">{user.bio}</p>}

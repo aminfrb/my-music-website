@@ -64,7 +64,7 @@ function NotificationsContent() {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div className="flex items-center justify-between">
-        <h1 className="font-heading text-4xl tracking-wide text-text">{t("notifications")}</h1>
+        <h1 className="font-heading text-3xl tracking-wide text-text">{t("notifications")}</h1>
         {items.length > 0 && (
           <Button variant="ghost" size="sm" onClick={() => markAll.mutate()}>
             {t("markAllRead")}

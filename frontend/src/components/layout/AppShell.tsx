@@ -23,7 +23,7 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="lg:ltr:pl-64 lg:rtl:pr-64">
         <TopBar />
         {/* Bottom padding leaves room for the fixed player bar. */}
-        <main className="mx-auto max-w-7xl px-4 pb-40 pt-6 sm:px-6">{children}</main>
+        <main className="mx-auto max-w-6xl px-4 pb-36 pt-5 sm:px-6">{children}</main>
       </div>
       <PlayerBar />
     </div>

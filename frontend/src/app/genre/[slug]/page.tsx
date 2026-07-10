@@ -34,7 +34,7 @@ export default function GenrePage({ params }: { params: { slug: string } }) {
   const tracks = tracksQuery.data?.search.music ?? [];
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <section className="overflow-hidden rounded-card border border-border bg-gradient-to-br from-primary/25 via-surface to-bg p-8 sm:p-12">
         <p className="text-sm font-medium text-text-muted">{t("sec_genres")}</p>
         <h1 className="mt-1 font-heading text-5xl tracking-wide text-text">{genre.name}</h1>

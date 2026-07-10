@@ -32,7 +32,7 @@ export function Modal({
         tabIndex={-1}
         onClick={onClose}
       />
-      <div className="relative z-10 w-full max-w-md rounded-t-card border border-border bg-bg-elevated p-6 shadow-card sm:rounded-card">
+      <div className="relative z-10 w-full max-w-md rounded-t-card border border-border bg-bg-elevated p-5 shadow-card sm:rounded-card">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="font-heading text-xl tracking-wide text-text">{title}</h3>
           <button
