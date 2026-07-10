@@ -57,6 +57,16 @@ async function main() {
   const gid = (slug: string) => genres.find((g) => g.slug === slug)!._id;
 
   const passwordHash = await hashPassword("password123");
+  // Simple test account for quick local login: amin@amin.com / amin
+  await User.create({
+    email: "amin@amin.com",
+    displayName: "amin",
+    role: "user",
+    locale: "en",
+    passwordHash: await hashPassword("amin"),
+    isTrusted: true,
+    bio: "Test account.",
+  });
   const [admin, , nima, sara, leo] = await User.create([
     { email: "admin@harmony.dev", displayName: "Harmony Admin", role: "admin", locale: "en", passwordHash, isTrusted: true, bio: "Platform administrator." },
     { email: "mod@harmony.dev", displayName: "Moderator", role: "admin", locale: "en", passwordHash, isTrusted: true },
@@ -141,6 +151,7 @@ async function main() {
   console.log("Seed complete:");
   console.log("  admin@harmony.dev / password123  (admin)");
   console.log("  sara@harmony.dev  / password123  (user)");
+  console.log("  amin@amin.com     / amin         (test user)");
   console.log(`  ${created.length} tracks, ${genres.length} genres seeded.`);
   void admin;
 }
