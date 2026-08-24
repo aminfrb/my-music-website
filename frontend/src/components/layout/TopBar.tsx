@@ -145,11 +145,11 @@ function UserMenu() {
       </button>
       {open && (
         <>
-          <button
-            type="button"
+          {/* Invisible click-catcher that dismisses the menu. Same reasoning as
+              the drawer backdrop: decorative, so hidden from assistive tech. */}
+          <div
             className="fixed inset-0 z-40 cursor-default"
-            aria-label="Close menu"
-            tabIndex={-1}
+            aria-hidden="true"
             onClick={() => setOpen(false)}
           />
           <div className="absolute z-50 mt-2 w-52 overflow-hidden rounded-xl border border-border bg-bg-elevated shadow-card ltr:right-0 rtl:left-0">
@@ -207,6 +207,7 @@ function SearchBar() {
 }
 
 function MobileMenu() {
+  const { t } = useLocale();
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -214,17 +215,18 @@ function MobileMenu() {
         type="button"
         onClick={() => setOpen(true)}
         className="grid h-10 w-10 place-items-center rounded-full text-text-muted hover:bg-surface hover:text-text lg:hidden cursor-pointer"
-        aria-label="Menu"
+        aria-label={t("openMenu")}
       >
         <Menu className="h-5 w-5" />
       </button>
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <button
-            type="button"
+          {/* Click-to-dismiss backdrop, hidden from assistive tech — it
+              duplicated the close button's name. A focusable element must
+              never be aria-hidden, so this is a div, not a button. */}
+          <div
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            aria-label="Close menu"
-            tabIndex={-1}
+            aria-hidden="true"
             onClick={() => setOpen(false)}
           />
           <div className="absolute inset-y-0 w-72 max-w-[80vw] space-y-6 bg-bg-elevated p-5 shadow-card ltr:left-0 rtl:right-0">
@@ -234,7 +236,7 @@ function MobileMenu() {
                 type="button"
                 onClick={() => setOpen(false)}
                 className="grid h-9 w-9 place-items-center rounded-full text-text-muted hover:bg-surface cursor-pointer"
-                aria-label="Close"
+                aria-label={t("close")}
               >
                 <X className="h-5 w-5" />
               </button>

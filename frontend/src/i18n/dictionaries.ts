@@ -235,6 +235,8 @@ const en = {
 
   // misc
   cancel: "Cancel",
+  close: "Close",
+  openMenu: "Open menu",
   save: "Save",
   create: "Create",
   loading: "Loading…",
@@ -465,6 +467,8 @@ const fa: Record<keyof typeof en, string> = {
   reason_other: "دیگر",
 
   cancel: "انصراف",
+  close: "بستن",
+  openMenu: "باز کردن منو",
   save: "ذخیره",
   create: "ساختن",
   loading: "در حال بارگذاری…",

@@ -2,6 +2,7 @@
 
 import { useEffect, useId } from "react";
 import { X } from "lucide-react";
+import { useLocale } from "@/providers/LocaleProvider";
 
 export function Modal({
   open,
@@ -14,6 +15,7 @@ export function Modal({
   title: string;
   children: React.ReactNode;
 }) {
+  const { t } = useLocale();
   const titleId = useId();
 
   useEffect(() => {
@@ -27,11 +29,12 @@ export function Modal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4">
-      <button
-        type="button"
+      {/* Click-to-dismiss backdrop. Hidden from assistive tech: it duplicated
+          the close button's name, and a keyboard or screen-reader user closes
+          with Escape or that button instead. */}
+      <div
+        aria-hidden="true"
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-        aria-label="Close"
-        tabIndex={-1}
         onClick={onClose}
       />
       {/* Announced as a dialog and named by its heading, so a screen-reader
@@ -50,7 +53,7 @@ export function Modal({
             type="button"
             onClick={onClose}
             className="grid h-8 w-8 place-items-center rounded-full text-text-muted hover:bg-surface hover:text-text cursor-pointer"
-            aria-label="Close"
+            aria-label={t("close")}
           >
             <X className="h-4 w-4" />
           </button>
