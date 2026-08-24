@@ -15,6 +15,7 @@ import { ALLOWED_AUDIO, ALLOWED_AUDIO_LABEL } from "../constants";
 import { errors } from "../utils/errors";
 import { parse } from "./auth.service";
 import { presignPutUrl, inspectObject, deleteObject } from "../upload/storage";
+import { uploadLimiter, presignLimiter } from "../middleware/rateLimit";
 import { normalizeTag, normalizeText, buildNormalized, dedupeKeyFor } from "../utils/text";
 import { assertValidTitle, assertValidArtistName } from "../upload/nameValidation";
 import { duplicateService } from "./duplicate.service";
@@ -86,6 +87,10 @@ async function getOwnedSession(user: IUser, sessionId: string): Promise<IUploadS
 
 export const uploadService = {
   async createSession(user: IUser): Promise<IUploadSession> {
+    // Hourly ceiling on top of the daily cap: the daily limit counts published
+    // tracks, so without this a script can open sessions (and, through them,
+    // request presigned URLs) without ever publishing.
+    uploadLimiter.consume(user._id.toString());
     await assertDailyLimit(user);
     return UploadSession.create({ user: user._id, status: "draft", step: 1, metadata: {} });
   },
@@ -97,6 +102,7 @@ export const uploadService = {
     contentType = "application/octet-stream",
   ): Promise<{ session: IUploadSession; key: string; url: string }> {
     const session = await getOwnedSession(user, sessionId);
+    presignLimiter.consume(user._id.toString());
     const key = `audio/${session._id}/${randomUUID()}`;
     const url = await presignPutUrl(key, contentType);
     session.audio = { key, mimeType: "", size: 0, duration: 0, hash: "", finalized: false };
@@ -194,6 +200,7 @@ export const uploadService = {
     contentType = "application/octet-stream",
   ): Promise<{ session: IUploadSession; key: string; url: string }> {
     const session = await getOwnedSession(user, sessionId);
+    presignLimiter.consume(user._id.toString());
     const key = `covers/${session._id}/${randomUUID()}`;
     const url = await presignPutUrl(key, contentType);
     session.cover = { key, mimeType: "", size: 0, finalized: false };

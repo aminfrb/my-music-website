@@ -83,7 +83,8 @@ export const musicResolvers = {
       return musicService.remove(ctx.requireUser(), id);
     },
     recordPlay(_p: unknown, { musicId, seconds }: { musicId: string; seconds?: number }, ctx: Context) {
-      return musicService.recordPlay(musicId, ctx.user, seconds ?? 0);
+      // The IP identifies anonymous listeners for the play cooldown.
+      return musicService.recordPlay(musicId, ctx.user, seconds ?? 0, ctx.ip);
     },
     recordInteraction(
       _p: unknown,

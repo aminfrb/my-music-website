@@ -12,6 +12,7 @@ import {
 import { errors } from "../utils/errors";
 import { parse } from "./auth.service";
 import { interactionService } from "./interaction.service";
+import { playLimiter, anonPlayLimiter, playCooldown } from "../middleware/rateLimit";
 import { buildNormalized, normalizeTag, dedupeKeyFor, normalizeText } from "../utils/text";
 import { assertValidTitle, assertValidArtistName } from "../upload/nameValidation";
 import { duplicateService } from "./duplicate.service";
@@ -61,6 +62,13 @@ async function byIdsOrdered(ids: Types.ObjectId[]): Promise<IMusic[]> {
   const map = new Map(docs.map((d) => [d._id.toString(), d]));
   return ids.map((id) => map.get(id.toString())).filter((m): m is IMusic => !!m);
 }
+
+/** Below this, a listen is a page load or a scrub, not a play. */
+const MIN_PLAY_SECONDS = 5;
+/** Floor for the replay cooldown, so very short tracks still can't be looped. */
+const MIN_REPLAY_COOLDOWN_MS = 30_000;
+/** Fallback cap when a track has no known duration (5 hours, the upload max). */
+const MAX_LISTEN_SECONDS = 60 * 60 * 5;
 
 export const musicService = {
   async byId(id: string, viewer: IUser | null): Promise<IMusic> {
@@ -133,21 +141,72 @@ export const musicService = {
     return true;
   },
 
-  /** Record a play / completion; updates counters + taste profile for signed-in users. */
+  /**
+   * Record a play / completion; updates counters + taste profile for signed-in
+   * users.
+   *
+   * `playCount` feeds both the homepage rankings and the recommendation ranker,
+   * so this endpoint is the obvious lever for anyone wanting to promote a
+   * track. The client is treated as hostile: the reported listen time is
+   * clamped to the real duration, a play too short to be a listen is ignored,
+   * uploaders can't farm their own uploads, and the same listener can't count
+   * the same track again until enough time has passed for them to have
+   * actually heard it. Anything rejected is dropped silently — a listener
+   * whose replay doesn't count shouldn't see an error.
+   */
   async recordPlay(
     id: string,
     viewer: IUser | null,
     seconds: number,
+    ip = "unknown",
   ): Promise<IMusic> {
     const music = await Music.findById(id).lean<IMusic>().exec();
     if (!music || music.status !== "published") throw errors.notFound("errors.musicNotFound");
-    const listened = Math.max(0, Math.floor(seconds || 0));
+
+    // Never trust the reported time: cap it at the track's real length so a
+    // huge value can't force `complete_play` or skew averageListenDuration.
+    const cap = music.duration > 0 ? music.duration : MAX_LISTEN_SECONDS;
+    const listened = Math.min(Math.max(0, Math.floor(seconds || 0)), cap);
+
+    // Too brief to be a listen. Also covers the `seconds: 0` call that used to
+    // earn a signed-in user a free increment.
+    if (listened < MIN_PLAY_SECONDS) return music;
+
+    // Uploaders don't inflate their own numbers.
+    if (viewer && music.uploadedBy.equals(viewer._id)) return music;
+
+    const listener = viewer ? `u:${viewer._id.toString()}` : `ip:${ip}`;
+    // Burst guard, well above any genuine listening rate. Anonymous listeners
+    // get a looser bucket because an IP can be a whole NAT'd network.
+    (viewer ? playLimiter : anonPlayLimiter).consume(listener);
+
+    // You cannot legitimately hear the same track twice in less time than the
+    // track runs for.
+    const cooldownMs = Math.max(MIN_REPLAY_COOLDOWN_MS, cap * 1000);
+    if (!playCooldown.check(`${listener}|${music._id.toString()}`, cooldownMs)) return music;
+
+    // The in-memory cooldown is lost on restart and isn't shared across
+    // instances; for signed-in users the interaction log is authoritative.
+    if (viewer) {
+      const recent = await MusicInteraction.findOne({
+        user: viewer._id,
+        music: music._id,
+        type: { $in: ["play", "complete_play"] },
+        createdAt: { $gte: new Date(Date.now() - cooldownMs) },
+      })
+        .select("_id")
+        .lean()
+        .exec();
+      if (recent) return music;
+    }
+
     const completed = music.duration > 0 && listened >= music.duration * 0.9;
     const type = completed ? "complete_play" : "play";
 
     if (viewer) {
+      // Increments playCount and updates the taste profile.
       await interactionService.record(viewer._id, music, type, listened);
-    } else if (listened >= 5) {
+    } else {
       await Music.updateOne({ _id: music._id }, { $inc: { playCount: 1 } });
     }
     return (await Music.findById(id).lean<IMusic>().exec())!;
@@ -162,7 +221,15 @@ export const musicService = {
   ): Promise<boolean> {
     const music = await Music.findById(id).lean<IMusic>().exec();
     if (!music || music.status !== "published") throw errors.notFound("errors.musicNotFound");
-    await interactionService.record(viewer._id, music, type, seconds);
+    // Same burst guard as plays: these write an interaction row each time.
+    playLimiter.consume(`i:${viewer._id.toString()}`);
+    const cap = music.duration > 0 ? music.duration : MAX_LISTEN_SECONDS;
+    await interactionService.record(
+      viewer._id,
+      music,
+      type,
+      Math.min(Math.max(0, Math.floor(seconds || 0)), cap),
+    );
     return true;
   },
 
