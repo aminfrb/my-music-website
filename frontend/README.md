@@ -43,12 +43,42 @@ Seeded backend accounts (password `password123`): `admin@harmony.dev`, `sara@har
 
 ## Scripts
 
-| Script              | Purpose                          |
-| ------------------- | -------------------------------- |
-| `npm run dev`       | Dev server with hot reload       |
-| `npm run build`     | Production build                 |
-| `npm start`         | Serve the production build       |
-| `npm run typecheck` | Strict TypeScript check, no emit |
+| Script               | Purpose                          |
+| -------------------- | -------------------------------- |
+| `npm run dev`        | Dev server with hot reload       |
+| `npm run build`      | Production build                 |
+| `npm start`          | Serve the production build       |
+| `npm run typecheck`  | Strict TypeScript check, no emit |
+| `npm test`           | Run every test once              |
+| `npm run test:watch` | Re-run affected tests on change  |
+
+## Tests
+
+Vitest + React Testing Library, in jsdom. No server or database needed —
+`npm test` runs standalone in a couple of seconds.
+
+```
+tests/
+  unit/         formatting, the client-side name check, dictionary integrity,
+                and the GraphQL client (token refresh, error details)
+  components/   DuplicateNotice, SuggestedUserRail, MusicCard, LocaleProvider
+  helpers/      provider-aware render, fixtures
+```
+
+Worth knowing when adding cases:
+
+- Components read copy through `useLocale`, so render them with
+  `renderWithProviders(ui, { locale })` rather than asserting around missing
+  context. Persian assertions are part of the suite, not an afterthought —
+  RTL and Persian digits are easy to regress.
+- `tsconfig.json` sets `jsx: "preserve"` because Next owns the transform in the
+  app build. Nothing does that under Vitest, so `vitest.config.ts` sets
+  `esbuild.jsx: "automatic"`.
+- `next/link` is stubbed to a plain anchor in `tests/setup.tsx`; the real one
+  needs App Router context, and every assertion here is about the `href`.
+- Mocking a function so it *returns* a rejected promise makes the runner report
+  a handled failure as an unhandled error. Prefer asserting on states the
+  component actually renders.
 
 ## Re-theming
 

@@ -18,7 +18,7 @@ import { SectionHeader } from "@/components/music/MusicRail";
  * recommendations, so the button stays on the card rather than behind a profile visit.
  */
 function SuggestedUserCard({ suggestion }: { suggestion: SuggestedUser }) {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
   const queryClient = useQueryClient();
   const { user } = suggestion;
 
@@ -55,7 +55,8 @@ function SuggestedUserCard({ suggestion }: { suggestion: SuggestedUser }) {
       )}
 
       <p className="text-xs text-text-faint">
-        {formatCount(user.followerCount)} {t("followersCount")} · {formatCount(user.trackCount)}{" "}
+        {formatCount(user.followerCount, locale)} {t("followersCount")} ·{" "}
+        {formatCount(user.trackCount, locale)}{" "}
         {t("tracksCount")}
       </p>
 
