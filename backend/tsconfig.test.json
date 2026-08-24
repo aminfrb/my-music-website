@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    // Vitest runs these through Vite, so they're ESM with bundler-style
+    // resolution — not the NodeNext/CJS the server itself is built as. Saying
+    // so here is what lets specs use top-level await and extensionless imports.
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "types": ["node"]
+  },
+  "include": ["tests/**/*.ts", "vitest.config.ts"]
+}

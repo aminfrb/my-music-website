@@ -457,7 +457,7 @@ export function scoreTrack(music: IMusic, ctx: RecContext, maxPlays: number): Sc
  * best-scoring track always survives the first pass, and the row never ends up
  * shorter than an undiversified one would have been.
  */
-function diversify(items: ScoredTrack[], limit: number): ScoredTrack[] {
+export function diversify(items: ScoredTrack[], limit: number): ScoredTrack[] {
   const picked: ScoredTrack[] = [];
   const taken = new Set<string>();
   const perUploader = new Map<string, number>();
@@ -558,14 +558,21 @@ export const recommendationService = {
    */
   async forYouScored(ctx: RecContext, limit = 20): Promise<ScoredTrack[]> {
     if (!ctx.hasTaste) {
+      // A first visit is exactly when range matters most, so the cold-start row
+      // is diversified too — otherwise whoever happens to hold the top play
+      // counts fills the whole thing, and there's nothing to react to.
       const trending = await Music.find({ ...PUBLIC, _id: { $nin: excludeIds(ctx) } })
         .sort({ playCount: -1, reactionCount: -1 })
-        .limit(limit + 10)
+        .limit(limit * 4)
         .lean<IMusic[]>()
         .exec();
-      return dropExcluded(trending, ctx)
-        .slice(0, limit)
-        .map((m) => ({ music: m, score: 0, reasonKey: "trending" as const, reasonParams: {} }));
+      const rows = dropExcluded(trending, ctx).map((m) => ({
+        music: m,
+        score: 0,
+        reasonKey: "trending" as const,
+        reasonParams: {},
+      }));
+      return topUp(diversify(rows, limit), ctx, limit);
     }
 
     const candidates = await loadCandidates(ctx);
