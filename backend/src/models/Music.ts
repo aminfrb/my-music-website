@@ -19,7 +19,17 @@ export interface IMusic {
   duration: number; // seconds
   fileSize: number; // bytes
   mimeType: string;
-  fileHash: string; // sha256, for dedup
+  fileHash: string; // sha256, for exact-file dedup
+  /**
+   * Canonical song identity: normalized title + primary artist
+   * ("seyl|mehrad hidden"). Two uploads sharing this are the same song even
+   * when the audio files differ, so only the first one is accepted.
+   */
+  dedupeKey: string;
+  /** Normalized artist name, indexed so "more from this artist" is a lookup
+   *  rather than a scan. Kept separate from `dedupeKey`, which folds featured
+   *  guests away and would merge distinct credits. */
+  artistKey: string;
   uploadedBy: Types.ObjectId;
   status: MusicStatus;
   visibility: Visibility;
@@ -51,6 +61,8 @@ const schema = new Schema<IMusic>(
     fileSize: { type: Number, default: 0 },
     mimeType: { type: String, required: true },
     fileHash: { type: String, required: true, index: true },
+    dedupeKey: { type: String, default: "", index: true },
+    artistKey: { type: String, default: "", index: true },
     uploadedBy: { type: Schema.Types.ObjectId, ref: "User", required: true, index: true },
     status: { type: String, enum: MUSIC_STATUSES, default: "pending", index: true },
     visibility: { type: String, enum: VISIBILITIES, default: "public" },
@@ -69,6 +81,8 @@ const schema = new Schema<IMusic>(
 
 // Duplicate detection is scoped per uploader (same person can't post the same file twice).
 schema.index({ uploadedBy: 1, fileHash: 1 }, { unique: true });
+// Song-identity lookups: "has anyone already posted this title by this artist?"
+schema.index({ dedupeKey: 1, status: 1 });
 schema.index({ status: 1, visibility: 1, publishedAt: -1 });
 schema.index({ normalized: "text" });
 

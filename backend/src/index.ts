@@ -64,12 +64,18 @@ async function main() {
         code?: string;
         messageKey?: string;
         params?: Record<string, string | number>;
+        details?: Record<string, unknown>;
       };
       // Re-localize application errors against the active request locale.
       if (ext.messageKey) {
         return {
           message: t(ext.messageKey, ext.params, getLocale()),
-          extensions: { code: ext.code ?? "INTERNAL_SERVER_ERROR" },
+          extensions: {
+            code: ext.code ?? "INTERNAL_SERVER_ERROR",
+            // Structured payload the UI renders (e.g. the original uploader of
+            // a duplicate track). Only present when the thrower supplied it.
+            ...(ext.details ? { details: ext.details } : {}),
+          },
           path: formatted.path,
           locations: formatted.locations,
         };

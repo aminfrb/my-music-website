@@ -11,14 +11,26 @@ export type ErrorCode =
   | "INTERNAL_SERVER_ERROR";
 
 /**
+ * Structured payload attached to an error so the client can render more than a
+ * sentence — e.g. the profile of whoever uploaded a track first. Survives
+ * `formatError` (see src/index.ts) under `extensions.details`.
+ */
+export type ErrorDetails = Record<string, unknown>;
+
+/**
  * Application error carrying an i18n message key. The human-readable `message`
  * is resolved against the request-scoped locale at throw time; the key + params
  * are also kept in `extensions` so `formatError` can re-localize if needed.
  */
 export class AppError extends GraphQLError {
-  constructor(code: ErrorCode, messageKey: string, params?: TranslationParams) {
+  constructor(
+    code: ErrorCode,
+    messageKey: string,
+    params?: TranslationParams,
+    details?: ErrorDetails,
+  ) {
     super(t(messageKey, params), {
-      extensions: { code, messageKey, params },
+      extensions: { code, messageKey, params, ...(details ? { details } : {}) },
     });
   }
 }
@@ -28,11 +40,12 @@ export const errors = {
     new AppError("UNAUTHENTICATED", key, p),
   forbidden: (key = "errors.forbidden", p?: TranslationParams) =>
     new AppError("FORBIDDEN", key, p),
-  badInput: (key = "errors.validation", p?: TranslationParams) =>
-    new AppError("BAD_USER_INPUT", key, p),
+  badInput: (key = "errors.validation", p?: TranslationParams, details?: ErrorDetails) =>
+    new AppError("BAD_USER_INPUT", key, p, details),
   notFound: (key = "errors.notFound", p?: TranslationParams) =>
     new AppError("NOT_FOUND", key, p),
-  conflict: (key: string, p?: TranslationParams) => new AppError("CONFLICT", key, p),
+  conflict: (key: string, p?: TranslationParams, details?: ErrorDetails) =>
+    new AppError("CONFLICT", key, p, details),
   rateLimited: (key = "errors.rateLimited", p?: TranslationParams) =>
     new AppError("RATE_LIMITED", key, p),
   internal: (key = "errors.internal", p?: TranslationParams) =>

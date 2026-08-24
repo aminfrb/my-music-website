@@ -11,10 +11,13 @@ import {
   type IMusic,
 } from "../models";
 import { env } from "../config/env";
+import { ALLOWED_AUDIO, ALLOWED_AUDIO_LABEL } from "../constants";
 import { errors } from "../utils/errors";
 import { parse } from "./auth.service";
 import { presignPutUrl, inspectObject, deleteObject } from "../upload/storage";
-import { normalizeTag, normalizeText, buildNormalized } from "../utils/text";
+import { normalizeTag, normalizeText, buildNormalized, dedupeKeyFor } from "../utils/text";
+import { assertValidTitle, assertValidArtistName } from "../upload/nameValidation";
+import { duplicateService } from "./duplicate.service";
 
 const metadataSchema = z.object({
   title: z.string().min(1).max(150).optional(),
@@ -101,30 +104,82 @@ export const uploadService = {
     return { session, key, url };
   },
 
-  /** Step: validate the uploaded audio object (sniff + size + dedup). */
+  /**
+   * Step: validate the uploaded audio object. Four gates, in order — the real
+   * container type (sniff), that it actually decodes as playable audio of a
+   * sane length (probe), and that nobody has already uploaded these exact bytes.
+   * A file failing any of them is deleted from storage immediately.
+   */
   async finalizeAudio(user: IUser, sessionId: string): Promise<IUploadSession> {
     const session = await getOwnedSession(user, sessionId);
     if (!session.audio?.key) throw errors.badInput("errors.uploadIncomplete");
+    const audioKey = session.audio.key;
+    const clientDuration = session.audio.duration ?? 0;
 
-    const info = await inspectObject(session.audio.key, "audio", env.uploads.maxAudioBytes);
-    if (!info.sniff) {
-      await deleteObject(session.audio.key);
+    const info = await inspectObject(audioKey, "audio", env.uploads.maxAudioBytes);
+
+    /** Drop the rejected object and clear the slot before surfacing the error. */
+    const reject = async (error: Error): Promise<never> => {
+      await deleteObject(audioKey);
       session.audio = null;
       await session.save();
-      throw errors.badInput("errors.invalidAudioType");
+      throw error;
+    };
+
+    if (!info.sniff || !info.probe) {
+      await reject(errors.badInput("errors.invalidAudioType", { allowed: ALLOWED_AUDIO_LABEL }));
     }
-    const dupe = await Music.exists({ uploadedBy: user._id, fileHash: info.hash });
+    const probe = info.probe!;
+
+    // The bytes start like audio — now confirm the container really decodes.
+    // A text file beginning with "ID3" gets this far and dies here.
+    if (!probe.hasAudioFrames) {
+      await reject(errors.badInput("errors.audioNotPlayable"));
+    }
+    if (!(probe.format in ALLOWED_AUDIO)) {
+      await reject(errors.badInput("errors.invalidAudioType", { allowed: ALLOWED_AUDIO_LABEL }));
+    }
+
+    // Duration comes from the file itself, never from the client.
+    const duration = probe.duration;
+    if (duration !== null) {
+      if (duration < env.uploads.minAudioSeconds) {
+        await reject(errors.badInput("errors.audioTooShort", { seconds: env.uploads.minAudioSeconds }));
+      }
+      if (duration > env.uploads.maxAudioSeconds) {
+        await reject(
+          errors.badInput("errors.audioTooLong", {
+            minutes: Math.round(env.uploads.maxAudioSeconds / 60),
+          }),
+        );
+      }
+    }
+
+    // Byte-identical audio already on the platform — from anyone, not just this
+    // user. Checked here so the file is rejected before metadata is even asked for.
+    const dupe = await duplicateService.find(null, null, info.hash);
     if (dupe) {
-      await deleteObject(session.audio.key);
-      session.audio = null;
-      await session.save();
-      throw errors.conflict("errors.duplicateFile");
+      const details = await duplicateService.details(dupe);
+      await reject(
+        dupe.music.uploadedBy.equals(user._id)
+          ? errors.conflict("errors.duplicateFile", { title: dupe.music.title }, { duplicate: details })
+          : errors.conflict(
+              "errors.duplicateTrack",
+              {
+                title: dupe.music.title,
+                artist: dupe.music.artistName,
+                name: dupe.uploader?.displayName ?? "",
+              },
+              { duplicate: details },
+            ),
+      );
     }
+
     session.audio = {
-      key: session.audio.key,
-      mimeType: info.sniff.mime,
+      key: audioKey,
+      mimeType: info.sniff!.mime,
       size: info.size,
-      duration: session.audio.duration ?? 0,
+      duration: duration !== null ? Math.round(duration) : clientDuration,
       hash: info.hash,
       finalized: true,
     };
@@ -177,11 +232,23 @@ export const uploadService = {
       }
     }
     const tags = (data.tags ?? session.metadata.tags ?? []).map(normalizeTag).filter(Boolean);
+    const title = data.title ?? session.metadata.title;
+    const artistName = data.artistName ?? session.metadata.artistName;
+
+    // Names are checked here (not only at publish) so the user is corrected on
+    // the details step, while the form is still in front of them.
+    if (title != null) assertValidTitle(title);
+    if (artistName != null) assertValidArtistName(artistName);
+
     await assertContentAllowed(
-      data.title ?? session.metadata.title,
+      title,
       data.description ?? session.metadata.description,
       tags,
     );
+
+    if (title && artistName) {
+      await duplicateService.assertNotDuplicate(user._id, title, artistName, session.audio?.hash);
+    }
 
     session.metadata = {
       title: data.title ?? session.metadata.title ?? null,
@@ -192,7 +259,11 @@ export const uploadService = {
       tags,
       visibility: data.visibility ?? session.metadata.visibility ?? "public",
     };
-    if (data.duration !== undefined && session.audio) session.audio.duration = data.duration;
+    // Only trust the client's duration when the container didn't reveal one
+    // (e.g. an M4A with its moov atom past the buffered head).
+    if (data.duration !== undefined && session.audio && !session.audio.duration) {
+      session.audio.duration = data.duration;
+    }
     session.step = Math.max(session.step, 3);
     await session.save();
     return session;
@@ -206,7 +277,17 @@ export const uploadService = {
     if (!m.title || !m.artistName || !m.genre) throw errors.badInput("errors.uploadIncomplete");
 
     await assertDailyLimit(user);
+    assertValidTitle(m.title);
+    assertValidArtistName(m.artistName);
     await assertContentAllowed(m.title, m.description, m.tags);
+    // Re-checked at publish: the song may have been claimed by someone else
+    // between the details step and now.
+    await duplicateService.assertNotDuplicate(
+      user._id,
+      m.title,
+      m.artistName,
+      session.audio.hash,
+    );
 
     const autoPublish = env.uploads.autoPublish;
     const music = await Music.create({
@@ -222,6 +303,8 @@ export const uploadService = {
       fileSize: session.audio.size,
       mimeType: session.audio.mimeType,
       fileHash: session.audio.hash,
+      dedupeKey: dedupeKeyFor(m.title, m.artistName),
+      artistKey: normalizeText(m.artistName),
       uploadedBy: user._id,
       status: autoPublish ? "published" : "pending",
       visibility: m.visibility,

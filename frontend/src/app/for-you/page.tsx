@@ -7,6 +7,7 @@ import type { Connection, Music, RecommendationSections } from "@/lib/types";
 import { useLocale } from "@/providers/LocaleProvider";
 import { RequireAuth } from "@/components/layout/RequireAuth";
 import { MusicRail } from "@/components/music/MusicRail";
+import { SuggestedUserRail } from "@/components/profile/SuggestedUserRail";
 import { LoadingBlock, EmptyState } from "@/components/ui/States";
 import { Sparkles } from "lucide-react";
 
@@ -29,15 +30,20 @@ function ForYouContent() {
 
   const s = recs.data?.recommendationSections;
   const feedTracks = feed.data?.followingFeed.nodes ?? [];
-  const anything =
-    s &&
-    (s.forYou.length ||
-      s.similarToSaved.length ||
-      s.basedOnGenres.length ||
-      s.popularAmongSimilar.length ||
-      s.newReleases.length ||
-      s.newDiscovery.length ||
-      feedTracks.length);
+  const rowCounts = [
+    s?.forYou.length,
+    s?.becauseYouFollow.length,
+    s?.genresFromYourNetwork.length,
+    s?.fromArtistsYouLike.length,
+    s?.similarToSaved.length,
+    s?.basedOnGenres.length,
+    s?.popularAmongSimilar.length,
+    s?.newReleases.length,
+    s?.newDiscovery.length,
+    s?.suggestedUsers.length,
+    feedTracks.length,
+  ];
+  const anything = rowCounts.some((n) => (n ?? 0) > 0);
 
   return (
     <div className="space-y-8">
@@ -47,16 +53,22 @@ function ForYouContent() {
       </div>
 
       {!anything ? (
-        <EmptyState
-          icon={<Sparkles className="h-10 w-10" />}
-          title={t("noResults")}
-        >
+        <EmptyState icon={<Sparkles className="h-10 w-10" />} title={t("noResults")}>
           {t("heroSubtitle")}
         </EmptyState>
       ) : (
         <>
           <MusicRail title={t("sec_forYou")} tracks={s?.forYou ?? []} />
+          {/* Social rows sit high: they're the strongest signal and the clearest
+              payoff for following someone. */}
           <MusicRail title={t("sec_followingFeed")} tracks={feedTracks} />
+          <MusicRail title={t("sec_becauseYouFollow")} tracks={s?.becauseYouFollow ?? []} />
+          <SuggestedUserRail suggestions={s?.suggestedUsers ?? []} />
+          <MusicRail
+            title={t("sec_genresFromYourNetwork")}
+            tracks={s?.genresFromYourNetwork ?? []}
+          />
+          <MusicRail title={t("sec_fromArtistsYouLike")} tracks={s?.fromArtistsYouLike ?? []} />
           <MusicRail title={t("sec_similarToSaved")} tracks={s?.similarToSaved ?? []} />
           <MusicRail title={t("sec_basedOnGenres")} tracks={s?.basedOnGenres ?? []} />
           <MusicRail

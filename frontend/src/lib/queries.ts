@@ -166,17 +166,61 @@ export const GENRE_DETAIL = /* GraphQL */ `
   }
 `;
 
+export const SUGGESTED_USER_FIELDS = /* GraphQL */ `
+  fragment SuggestedUserFields on SuggestedUser {
+    reasonKey
+    reason
+    mutualCount
+    sharedGenres { id slug name }
+    user {
+      id
+      displayName
+      avatarUrl
+      bio
+      isVerifiedArtist
+      followerCount
+      trackCount
+      isFollowedByMe
+    }
+  }
+`;
+
 export const RECOMMENDATION_SECTIONS = /* GraphQL */ `
   ${MUSIC_FIELDS}
+  ${SUGGESTED_USER_FIELDS}
   query RecommendationSections {
     recommendationSections {
       forYou { ...MusicFields }
+      becauseYouFollow { ...MusicFields }
+      genresFromYourNetwork { ...MusicFields }
+      fromArtistsYouLike { ...MusicFields }
       similarToSaved { ...MusicFields }
       basedOnGenres { ...MusicFields }
       popularAmongSimilar { ...MusicFields }
       newReleases { ...MusicFields }
       newDiscovery { ...MusicFields }
+      suggestedUsers { ...SuggestedUserFields }
     }
+  }
+`;
+
+/** The main row, with each track's reason for being there. */
+export const RECOMMENDATION_FEED = /* GraphQL */ `
+  ${MUSIC_FIELDS}
+  query RecommendationFeed($limit: Int) {
+    recommendationFeed(limit: $limit) {
+      reasonKey
+      reason
+      score
+      music { ...MusicFields }
+    }
+  }
+`;
+
+export const SUGGESTED_USERS = /* GraphQL */ `
+  ${SUGGESTED_USER_FIELDS}
+  query SuggestedUsers($limit: Int) {
+    suggestedUsers(limit: $limit) { ...SuggestedUserFields }
   }
 `;
 

@@ -12,7 +12,9 @@ import {
 import { errors } from "../utils/errors";
 import { parse } from "./auth.service";
 import { interactionService } from "./interaction.service";
-import { buildNormalized, normalizeTag } from "../utils/text";
+import { buildNormalized, normalizeTag, dedupeKeyFor, normalizeText } from "../utils/text";
+import { assertValidTitle, assertValidArtistName } from "../upload/nameValidation";
+import { duplicateService } from "./duplicate.service";
 import {
   buildConnection,
   afterIdFilter,
@@ -81,8 +83,28 @@ export const musicService = {
       }
       music.genre = new Types.ObjectId(data.genreId);
     }
-    if (data.title !== undefined) music.title = data.title;
-    if (data.artistName !== undefined) music.artistName = data.artistName;
+    // Renaming goes through the same naming rules and duplicate check as the
+    // original upload — otherwise a valid title could be swapped for junk, or
+    // for a song someone else already owns, right after publishing.
+    if (data.title !== undefined) {
+      assertValidTitle(data.title);
+      music.title = data.title;
+    }
+    if (data.artistName !== undefined) {
+      assertValidArtistName(data.artistName);
+      music.artistName = data.artistName;
+    }
+    if (data.title !== undefined || data.artistName !== undefined) {
+      await duplicateService.assertNotDuplicate(
+        user._id,
+        music.title,
+        music.artistName,
+        null,
+        music._id,
+      );
+      music.dedupeKey = dedupeKeyFor(music.title, music.artistName);
+      music.artistKey = normalizeText(music.artistName);
+    }
     if (data.caption !== undefined) music.caption = data.caption;
     if (data.description !== undefined) music.description = data.description;
     if (data.visibility) music.visibility = data.visibility;

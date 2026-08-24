@@ -40,16 +40,26 @@ export function setStoredLocale(locale: Locale) {
 
 export class GraphQLError extends Error {
   code?: string;
-  constructor(message: string, code?: string) {
+  /**
+   * Structured payload some errors carry alongside the message — e.g. the
+   * profile of whoever uploaded a track first, so the upload screen can offer
+   * their page instead of a dead end.
+   */
+  details?: Record<string, unknown>;
+  constructor(message: string, code?: string, details?: Record<string, unknown>) {
     super(message);
     this.name = "GraphQLError";
     this.code = code;
+    this.details = details;
   }
 }
 
 interface GqlResponse<T> {
   data?: T;
-  errors?: Array<{ message: string; extensions?: { code?: string } }>;
+  errors?: Array<{
+    message: string;
+    extensions?: { code?: string; details?: Record<string, unknown> };
+  }>;
 }
 
 async function rawRequest<T>(
@@ -124,7 +134,7 @@ export async function gql<T>(
 
   if (json.errors && json.errors.length) {
     const first = json.errors[0];
-    throw new GraphQLError(first.message, first.extensions?.code);
+    throw new GraphQLError(first.message, first.extensions?.code, first.extensions?.details);
   }
   if (!json.data) throw new GraphQLError("Empty response from server");
   return json.data;

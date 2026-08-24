@@ -70,6 +70,32 @@ const en = {
   sec_newReleases: "New releases for you",
   sec_newDiscovery: "Something new",
   sec_followingFeed: "From people you follow",
+  sec_becauseYouFollow: "Loved by people you follow",
+  sec_genresFromYourNetwork: "Genres your network listens to",
+  sec_fromArtistsYouLike: "More from artists you love",
+  sec_suggestedUsers: "People to follow",
+  whyRecommended: "Why this?",
+  followsYouBack: "Follows you",
+  tracksCount: "tracks",
+  followersCount: "followers",
+  following_: "Following",
+  viewProfile: "View profile",
+
+  // upload — duplicate track
+  dupTitle: "This track is already on Spidermelody",
+  dupUploadedBy: "Uploaded by",
+  dupSameFile: "Someone has already uploaded this exact audio file.",
+  dupSameSong: "This song has already been posted, so it can only live here once.",
+  dupFollowHint: "Follow them to see what else they post.",
+  dupOpenTrack: "Open the track",
+  dupTryAnother: "Upload a different track",
+
+  // upload — naming help
+  titleHint: "The song's real name, in English or Persian — not the file name.",
+  titlePlaceholder: "e.g. Seyl",
+  artistNamePlaceholder: "e.g. Mehrad Hidden",
+  artistNameHint: "The artist who performed it.",
+  nameLooksAuto: "That looks like a file name. Use the song's real name.",
   seeAll: "See all",
 
   // player / track
@@ -281,6 +307,32 @@ const fa: Record<keyof typeof en, string> = {
   sec_newReleases: "تازه‌های مخصوص تو",
   sec_newDiscovery: "یک چیز تازه",
   sec_followingFeed: "از کسانی که دنبال می‌کنی",
+  sec_becauseYouFollow: "محبوبِ کسانی که دنبال می‌کنی",
+  sec_genresFromYourNetwork: "سبک‌هایی که شبکهٔ تو گوش می‌دهد",
+  sec_fromArtistsYouLike: "بیشتر از خواننده‌هایی که دوست داری",
+  sec_suggestedUsers: "افرادی برای دنبال کردن",
+  whyRecommended: "چرا این؟",
+  followsYouBack: "شما را دنبال می‌کند",
+  tracksCount: "آهنگ",
+  followersCount: "دنبال‌کننده",
+  following_: "دنبال می‌کنی",
+  viewProfile: "دیدن پروفایل",
+
+  // upload — duplicate track
+  dupTitle: "این آهنگ از قبل در اسپایدرملودی هست",
+  dupUploadedBy: "بارگذاری‌شده توسط",
+  dupSameFile: "کسی دقیقاً همین فایل صوتی را قبلاً بارگذاری کرده است.",
+  dupSameSong: "این آهنگ قبلاً منتشر شده و فقط یک‌بار می‌تواند اینجا باشد.",
+  dupFollowHint: "دنبالش کن تا ببینی چه چیز دیگری منتشر می‌کند.",
+  dupOpenTrack: "دیدن آهنگ",
+  dupTryAnother: "یک آهنگ دیگر بارگذاری کن",
+
+  // upload — naming help
+  titleHint: "نام واقعی آهنگ به فارسی یا انگلیسی — نه نام فایل.",
+  titlePlaceholder: "مثلاً: سیل",
+  artistNamePlaceholder: "مثلاً: مهراد هیدن",
+  artistNameHint: "خواننده‌ای که آن را اجرا کرده است.",
+  nameLooksAuto: "این شبیه نام فایل است. نام واقعی آهنگ را بنویس.",
   seeAll: "دیدن همه",
 
   play: "پخش",

@@ -93,8 +93,16 @@ export const UPLOAD_SESSION_STATUSES = ["draft", "completed", "published", "canc
 export type UploadSessionStatus = (typeof UPLOAD_SESSION_STATUSES)[number];
 
 // Allowed audio formats (extension → canonical mime). Cover images handled in upload/validation.
+// The byte sniffer recognizes more containers than this; anything outside the
+// map is rejected at upload so we only ever serve formats every browser plays.
 export const ALLOWED_AUDIO = {
   mp3: "audio/mpeg",
   wav: "audio/wav",
   m4a: "audio/mp4",
 } as const;
+export type AllowedAudioExt = keyof typeof ALLOWED_AUDIO;
+
+/** "MP3, WAV, M4A" — interpolated into upload error messages. */
+export const ALLOWED_AUDIO_LABEL = Object.keys(ALLOWED_AUDIO)
+  .map((ext) => ext.toUpperCase())
+  .join(", ");

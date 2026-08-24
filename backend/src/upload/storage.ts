@@ -11,6 +11,14 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { env } from "../config/env";
 import { errors } from "../utils/errors";
 import { formatBytes, sniffAudio, sniffImage, type SniffResult } from "./validation";
+import { probeAudio, type AudioProbe } from "./probe";
+
+/**
+ * How much of the object we keep in memory while streaming it. Enough for an
+ * ID3 tag plus the MP4 `moov` atom and a healthy run of MPEG frames, without
+ * buffering a whole 50 MB upload.
+ */
+const HEAD_BYTES = 512 * 1024;
 
 export const s3 = new S3Client({
   region: env.s3.region,
@@ -91,6 +99,8 @@ export interface InspectedObject {
   size: number;
   hash: string; // sha256 hex
   sniff: SniffResult | null;
+  /** Container-level decode of the audio (null for images / unknown types). */
+  probe: AudioProbe | null;
 }
 
 /**
@@ -108,8 +118,10 @@ export async function inspectObject(
   if (!body) throw errors.badInput("errors.fileRequired");
 
   const hash = crypto.createHash("sha256");
+  const headTarget = kind === "audio" ? HEAD_BYTES : 32;
+  const headChunks: Buffer[] = [];
+  let headLength = 0;
   let size = 0;
-  let head: Buffer = Buffer.alloc(0);
 
   for await (const chunk of body) {
     const buf = chunk as Buffer;
@@ -118,10 +130,15 @@ export async function inspectObject(
       body.destroy();
       throw errors.badInput("errors.fileTooLarge", { kind, max: formatBytes(maxBytes) });
     }
-    if (head.length < 32) head = Buffer.concat([head, buf]).subarray(0, 32);
+    if (headLength < headTarget) {
+      headChunks.push(buf);
+      headLength += buf.length;
+    }
     hash.update(buf);
   }
 
+  const head = Buffer.concat(headChunks).subarray(0, headTarget);
   const sniff = kind === "audio" ? sniffAudio(head) : sniffImage(head);
-  return { size, hash: hash.digest("hex"), sniff };
+  const probe = kind === "audio" ? probeAudio(head, size) : null;
+  return { size, hash: hash.digest("hex"), sniff, probe };
 }

@@ -58,6 +58,10 @@ export const env = {
     dailyLimitTrusted: int("DAILY_UPLOAD_LIMIT_TRUSTED", 50),
     // Accounts younger than this many hours are treated as "new".
     newUserAgeHours: int("NEW_USER_AGE_HOURS", 48),
+    // A real track has to be at least this long — rejects blips, notification
+    // sounds and truncated downloads that still sniff as valid audio.
+    minAudioSeconds: int("MIN_AUDIO_SECONDS", 10),
+    maxAudioSeconds: int("MAX_AUDIO_SECONDS", 60 * 60 * 5),
   },
 
   s3: {

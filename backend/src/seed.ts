@@ -19,7 +19,7 @@ import {
   RecommendationProfile,
 } from "./models";
 import { hashPassword } from "./auth/password";
-import { buildNormalized, randomToken } from "./utils/text";
+import { buildNormalized, randomToken, dedupeKeyFor, normalizeText } from "./utils/text";
 import { interactionService } from "./services/interaction.service";
 
 const GENRES = [
@@ -104,6 +104,8 @@ async function main() {
       playCount: t.playCount,
       publishedAt: new Date(),
       normalized: buildNormalized([t.title, t.artistName, ...t.tags]),
+      dedupeKey: dedupeKeyFor(t.title, t.artistName),
+      artistKey: normalizeText(t.artistName),
     });
     created.push(m);
   }

@@ -193,6 +193,45 @@ export interface RecommendationSections {
   popularAmongSimilar: Music[];
   newReleases: Music[];
   newDiscovery: Music[];
+  becauseYouFollow: Music[];
+  genresFromYourNetwork: Music[];
+  fromArtistsYouLike: Music[];
+  suggestedUsers: SuggestedUser[];
+}
+
+/** A recommended track with the reason the ranker picked it. */
+export interface RecommendedTrack {
+  music: Music;
+  reasonKey: string;
+  reason: string;
+  score: number;
+}
+
+/** A person to follow, plus why they're a good match. */
+export interface SuggestedUser {
+  user: User;
+  reasonKey: string;
+  reason: string;
+  mutualCount: number;
+  sharedGenres: Genre[];
+}
+
+/**
+ * Attached to a duplicate-upload error so the upload screen can show who
+ * posted the track first and link straight to their profile.
+ */
+export interface DuplicateDetails {
+  kind: "file" | "song";
+  musicId: string;
+  title: string;
+  artistName: string;
+  publishedAt: string | null;
+  uploader: {
+    id: string;
+    displayName: string;
+    avatarUrl: string | null;
+    isVerifiedArtist: boolean;
+  } | null;
 }
 
 export interface SearchResult {
