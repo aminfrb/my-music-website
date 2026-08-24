@@ -10,6 +10,7 @@ import { formatCount } from "@/lib/format";
 import { useLocale } from "@/providers/LocaleProvider";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
+import { InlineError } from "@/components/ui/InlineError";
 import { SectionHeader } from "@/components/music/MusicRail";
 
 /**
@@ -69,6 +70,7 @@ function SuggestedUserCard({ suggestion }: { suggestion: SuggestedUser }) {
       >
         {user.isFollowedByMe ? t("following_") : t("follow")}
       </Button>
+      <InlineError error={followMutation.error} className="text-center" />
     </div>
   );
 }

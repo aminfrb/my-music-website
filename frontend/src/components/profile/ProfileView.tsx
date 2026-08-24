@@ -18,6 +18,7 @@ import { useLocale } from "@/providers/LocaleProvider";
 import { useAuth } from "@/providers/AuthProvider";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
+import { InlineError } from "@/components/ui/InlineError";
 import { Field, Input, Textarea } from "@/components/ui/Input";
 import { Modal } from "@/components/ui/Modal";
 import { MusicGrid, SectionHeader } from "@/components/music/MusicRail";
@@ -95,22 +96,25 @@ export function ProfileView({ userId }: { userId: string }) {
               {t("editProfile")}
             </Button>
           ) : me ? (
-            <div className="flex items-center gap-2">
-              <Button
-                variant={user.isFollowedByMe ? "outline" : "primary"}
-                loading={followMutation.isPending}
-                onClick={() => followMutation.mutate(!user.isFollowedByMe)}
-              >
-                {user.isFollowedByMe ? t("unfollow") : t("follow")}
-              </Button>
-              {user.allowMessages !== false && (
-                <Link href={`/messages/${user.id}`}>
-                  <Button variant="outline">
-                    <MessageCircle className="h-4 w-4" />
-                    {t("msgButton")}
-                  </Button>
-                </Link>
-              )}
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-2">
+                <Button
+                  variant={user.isFollowedByMe ? "outline" : "primary"}
+                  loading={followMutation.isPending}
+                  onClick={() => followMutation.mutate(!user.isFollowedByMe)}
+                >
+                  {user.isFollowedByMe ? t("unfollow") : t("follow")}
+                </Button>
+                {user.allowMessages !== false && (
+                  <Link href={`/messages/${user.id}`}>
+                    <Button variant="outline">
+                      <MessageCircle className="h-4 w-4" />
+                      {t("msgButton")}
+                    </Button>
+                  </Link>
+                )}
+              </div>
+              <InlineError error={followMutation.error} />
             </div>
           ) : null}
         </div>

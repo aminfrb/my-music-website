@@ -10,6 +10,7 @@ import { formatRelativeDate } from "@/lib/format";
 import { useLocale } from "@/providers/LocaleProvider";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
+import { InlineError } from "@/components/ui/InlineError";
 
 /**
  * Shown when an upload is rejected because the song is already here.
@@ -79,26 +80,29 @@ export function DuplicateNotice({
               </span>
             </Link>
 
-            <div className="flex flex-wrap gap-2 ltr:ml-auto rtl:mr-auto">
-              <Button
-                size="sm"
-                variant={followed ? "outline" : "primary"}
-                loading={followMutation.isPending}
-                disabled={followed}
-                onClick={() => followMutation.mutate()}
-              >
-                {followed ? t("following_") : t("follow")}
-              </Button>
-              <Link href={`/u/${uploader.id}`}>
-                <Button size="sm" variant="outline">
-                  {t("viewProfile")}
+            <div className="flex flex-col items-end gap-1 ltr:ml-auto rtl:mr-auto">
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  size="sm"
+                  variant={followed ? "outline" : "primary"}
+                  loading={followMutation.isPending}
+                  disabled={followed}
+                  onClick={() => followMutation.mutate()}
+                >
+                  {followed ? t("following_") : t("follow")}
                 </Button>
-              </Link>
-              <Link href={`/music/${duplicate.musicId}`}>
-                <Button size="sm" variant="ghost">
-                  {t("dupOpenTrack")}
-                </Button>
-              </Link>
+                <Link href={`/u/${uploader.id}`}>
+                  <Button size="sm" variant="outline">
+                    {t("viewProfile")}
+                  </Button>
+                </Link>
+                <Link href={`/music/${duplicate.musicId}`}>
+                  <Button size="sm" variant="ghost">
+                    {t("dupOpenTrack")}
+                  </Button>
+                </Link>
+              </div>
+              <InlineError error={followMutation.error} />
             </div>
           </>
         ) : (

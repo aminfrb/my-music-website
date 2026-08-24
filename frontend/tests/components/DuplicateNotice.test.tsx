@@ -1,17 +1,16 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithProviders } from "../helpers/render";
+import { mockApi, type ApiMock } from "../helpers/api";
 import { makeDuplicate } from "../helpers/fixtures";
 import { DuplicateNotice } from "@/components/music/DuplicateNotice";
 
-const gqlMock = vi.hoisted(() => vi.fn());
-vi.mock("@/lib/graphql", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@/lib/graphql")>();
-  return { ...actual, gql: gqlMock };
+let api: ApiMock;
+beforeEach(() => {
+  api = mockApi();
 });
-
-beforeEach(() => gqlMock.mockReset());
+afterEach(() => vi.unstubAllGlobals());
 
 /**
  * Rejecting an upload as a duplicate is a dead end unless it tells the user who
@@ -74,7 +73,6 @@ describe("DuplicateNotice", () => {
 
   describe("following from the notice", () => {
     it("sends the follow mutation for the original uploader", async () => {
-      gqlMock.mockResolvedValue({});
       const user = userEvent.setup();
       renderWithProviders(
         <DuplicateNotice duplicate={makeDuplicate()} message={message} />,
@@ -82,12 +80,12 @@ describe("DuplicateNotice", () => {
 
       await user.click(screen.getByRole("button", { name: "Follow" }));
 
-      await waitFor(() => expect(gqlMock).toHaveBeenCalledOnce());
-      expect(gqlMock.mock.calls[0][1]).toEqual({ userId: "u9" });
+      await waitFor(() => expect(api.calls).toHaveLength(1));
+      expect(api.calls[0].query).toContain("FollowUser");
+      expect(api.calls[0].variables).toEqual({ userId: "u9" });
     });
 
     it("switches to the followed state once it succeeds", async () => {
-      gqlMock.mockResolvedValue({});
       const user = userEvent.setup();
       renderWithProviders(
         <DuplicateNotice duplicate={makeDuplicate()} message={message} />,
@@ -99,12 +97,7 @@ describe("DuplicateNotice", () => {
       );
     });
 
-    // Not covered: what the UI does when the follow *fails*. The component has
-    // no onError handler, so there is no behaviour of ours to assert — the
-    // button just stays on "Follow". Worth adding feedback there; the test
-    // should follow that fix rather than stand in for it.
     it("invalidates the recommendation queries, since following changes the feed", async () => {
-      gqlMock.mockResolvedValue({});
       const user = userEvent.setup();
       const { queryClient } = renderWithProviders(
         <DuplicateNotice duplicate={makeDuplicate()} message={message} />,
@@ -118,6 +111,38 @@ describe("DuplicateNotice", () => {
       expect(keys.some((k) => k.includes("recommendationSections"))).toBe(true);
     });
 
+  });
+
+  describe("when following fails", () => {
+    it("surfaces the server's reason instead of failing silently", async () => {
+      api.fail("You are already following this user.", "CONFLICT");
+      const user = userEvent.setup();
+      renderWithProviders(
+        <DuplicateNotice duplicate={makeDuplicate()} message={message} />,
+      );
+
+      await user.click(screen.getByRole("button", { name: "Follow" }));
+
+      await waitFor(() =>
+        expect(screen.getByRole("alert")).toHaveTextContent(
+          "You are already following this user.",
+        ),
+      );
+    });
+
+    it("leaves the button on Follow, so a failure never looks like a success", async () => {
+      api.failNetwork();
+      const user = userEvent.setup();
+      renderWithProviders(
+        <DuplicateNotice duplicate={makeDuplicate()} message={message} />,
+      );
+
+      await user.click(screen.getByRole("button", { name: "Follow" }));
+
+      await waitFor(() => expect(screen.getByRole("alert")).toBeInTheDocument());
+      expect(screen.getByRole("button", { name: "Follow" })).toBeEnabled();
+      expect(screen.queryByRole("button", { name: "Following" })).not.toBeInTheDocument();
+    });
   });
 
   describe("when the uploader can't be resolved", () => {

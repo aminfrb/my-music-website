@@ -17,6 +17,7 @@ import { useAuth } from "@/providers/AuthProvider";
 import { usePlayer } from "@/providers/PlayerProvider";
 import { Cover } from "@/components/ui/Cover";
 import { Button } from "@/components/ui/Button";
+import { InlineError } from "@/components/ui/InlineError";
 import { Avatar } from "@/components/ui/Avatar";
 import { LoadingBlock, ErrorBlock, EmptyState } from "@/components/ui/States";
 import { MusicRow } from "@/components/music/MusicRow";
@@ -119,6 +120,7 @@ export default function PlaylistPage({ params }: { params: { id: string } }) {
               </Button>
             )}
           </div>
+          <InlineError error={followMutation.error} className="mt-2" />
         </div>
       </section>
 

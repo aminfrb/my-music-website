@@ -61,7 +61,8 @@ Vitest + React Testing Library, in jsdom. No server or database needed —
 tests/
   unit/         formatting, the client-side name check, dictionary integrity,
                 and the GraphQL client (token refresh, error details)
-  components/   DuplicateNotice, SuggestedUserRail, MusicCard, LocaleProvider
+  components/   DuplicateNotice, SuggestedUserRail, MusicCard, InlineError,
+                LocaleProvider
   helpers/      provider-aware render, fixtures
 ```
 
@@ -76,9 +77,12 @@ Worth knowing when adding cases:
   `esbuild.jsx: "automatic"`.
 - `next/link` is stubbed to a plain anchor in `tests/setup.tsx`; the real one
   needs App Router context, and every assertion here is about the `href`.
-- Mocking a function so it *returns* a rejected promise makes the runner report
-  a handled failure as an unhandled error. Prefer asserting on states the
-  component actually renders.
+- Stub the network with `mockApi()` (`tests/helpers/api.ts`) rather than mocking
+  the `gql` module. Mocking `gql` means a failure case has to hand back a
+  rejected promise, which the runner reports as an unhandled error even though
+  the component handled it. Stubbing `fetch` avoids that and is more faithful:
+  the real client runs, so `GraphQLError` construction and the
+  `extensions.details` channel are exercised rather than assumed.
 
 ## Re-theming
 
