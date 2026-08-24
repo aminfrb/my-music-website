@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useId } from "react";
 import { X } from "lucide-react";
 
 export function Modal({
@@ -14,6 +14,8 @@ export function Modal({
   title: string;
   children: React.ReactNode;
 }) {
+  const titleId = useId();
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -32,9 +34,18 @@ export function Modal({
         tabIndex={-1}
         onClick={onClose}
       />
-      <div className="relative z-10 w-full max-w-md rounded-t-card border border-border bg-bg-elevated p-5 shadow-card sm:rounded-card">
+      {/* Announced as a dialog and named by its heading, so a screen-reader
+          user knows they've entered one and what it is. */}
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={titleId}
+        className="relative z-10 w-full max-w-md rounded-t-card border border-border bg-bg-elevated p-5 shadow-card sm:rounded-card"
+      >
         <div className="mb-4 flex items-center justify-between">
-          <h3 className="font-heading text-xl tracking-wide text-text">{title}</h3>
+          <h3 id={titleId} className="font-heading text-xl tracking-wide text-text">
+            {title}
+          </h3>
           <button
             type="button"
             onClick={onClose}

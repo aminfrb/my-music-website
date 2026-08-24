@@ -1,4 +1,13 @@
-import type { DuplicateDetails, Genre, Music, SuggestedUser, User } from "@/lib/types";
+import type {
+  Connection,
+  DuplicateDetails,
+  Genre,
+  Music,
+  Playlist,
+  PlaylistItem,
+  SuggestedUser,
+  User,
+} from "@/lib/types";
 
 export function makeUser(overrides: Partial<User> = {}): User {
   return {
@@ -79,4 +88,45 @@ export function makeDuplicate(overrides: Partial<DuplicateDetails> = {}): Duplic
     },
     ...overrides,
   };
+}
+
+export function makePlaylistItem(overrides: Partial<PlaylistItem> = {}): PlaylistItem {
+  return {
+    id: "pi1",
+    position: 0,
+    music: makeMusic(),
+    addedAt: "2026-06-01T00:00:00.000Z",
+    ...overrides,
+  };
+}
+
+export function makePlaylist(overrides: Partial<Playlist> = {}): Playlist {
+  const items = overrides.items ?? [makePlaylistItem()];
+  return {
+    id: "p1",
+    name: "Late Night",
+    description: "For the drive home.",
+    coverUrl: null,
+    owner: makeUser({ id: "owner1", displayName: "Ali" }),
+    collaborators: [],
+    visibility: "public",
+    mood: null,
+    followersCount: 40,
+    trackCount: items.length,
+    shareToken: "tok",
+    isFollowedByMe: false,
+    createdAt: "2026-05-01T00:00:00.000Z",
+    updatedAt: "2026-05-01T00:00:00.000Z",
+    ...overrides,
+    items,
+  } as Playlist;
+}
+
+/** A single-page Relay-style connection, as the profile query returns. */
+export function makeConnection<T>(nodes: T[]): Connection<T> {
+  return {
+    nodes,
+    pageInfo: { hasNextPage: false, endCursor: null },
+    totalCount: nodes.length,
+  } as Connection<T>;
 }

@@ -61,8 +61,8 @@ Vitest + React Testing Library, in jsdom. No server or database needed —
 tests/
   unit/         formatting, the client-side name check, dictionary integrity,
                 and the GraphQL client (token refresh, error details)
-  components/   DuplicateNotice, SuggestedUserRail, MusicCard, InlineError,
-                LocaleProvider
+  components/   ProfileView, PlaylistPage, DuplicateNotice, SuggestedUserRail,
+                MusicCard, InlineError, LocaleProvider
   helpers/      provider-aware render, fixtures
 ```
 
@@ -77,6 +77,11 @@ Worth knowing when adding cases:
   `esbuild.jsx: "automatic"`.
 - `next/link` is stubbed to a plain anchor in `tests/setup.tsx`; the real one
   needs App Router context, and every assertion here is about the `href`.
+- Page-level specs stub `useAuth` and `usePlayer` per file, so a test can say
+  who is signed in (owner / other user / signed out) without building a session.
+- A playlist page renders one "Play" button per row plus the header's, all with
+  the same accessible name — scope those queries to a section rather than
+  reaching for `getAllBy…[0]`.
 - Stub the network with `mockApi()` (`tests/helpers/api.ts`) rather than mocking
   the `gql` module. Mocking `gql` means a failure case has to hand back a
   rejected promise, which the runner reports as an unhandled error even though
