@@ -42,7 +42,11 @@ export function MusicCard({
           <button
             type="button"
             onClick={onPlay}
-            aria-label={active && isPlaying ? t("pause") : t("play")}
+            aria-label={
+              active && isPlaying
+                ? t("pauseTrack", { title: music.title })
+                : t("playTrack", { title: music.title })
+            }
             className={cn(
               "absolute bottom-2 grid h-11 w-11 place-items-center rounded-full bg-play text-black shadow-glow transition-all duration-200 hover:scale-105",
               "ltr:right-2 rtl:left-2",

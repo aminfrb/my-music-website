@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { screen, waitFor, within } from "@testing-library/react";
+import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { renderWithProviders } from "../helpers/render";
 import { mockApi, type ApiMock } from "../helpers/api";
@@ -37,13 +37,11 @@ let api: ApiMock;
 const render = (id = "p1") => renderWithProviders(<PlaylistPage params={{ id }} />);
 
 /**
- * The header's own Play button. Every track row carries one too, and they all
- * share the accessible name "Play", so the query has to be scoped to the header
- * section to be unambiguous.
+ * The header's "play the whole playlist" button. Track rows name their own
+ * controls after the track ("Play Seyl"), so plain "Play" is unambiguous.
  */
 async function headerPlayButton() {
-  const heading = await screen.findByRole("heading", { name: "Late Night" });
-  return within(heading.closest("section")!).getByRole("button", { name: /^(Play|پخش)$/ });
+  return screen.findByRole("button", { name: /^(Play|پخش)$/ });
 }
 const payload = (overrides: Partial<Playlist> = {}) => ({ playlist: makePlaylist(overrides) });
 
@@ -153,6 +151,24 @@ describe("PlaylistPage — playback", () => {
     const [queue, index] = player.playQueue.mock.calls[0];
     expect(queue.map((m: { id: string }) => m.id)).toEqual(["m1", "m2"]);
     expect(index).toBe(0);
+  });
+
+  it("names each row's control after its track, not just \"Play\"", async () => {
+    // A 20-track playlist used to render 21 buttons all named "Play".
+    api.resolve(
+      payload({
+        items: [
+          makePlaylistItem({ id: "i1", music: makeMusic({ id: "m1", title: "Seyl" }) }),
+          makePlaylistItem({ id: "i2", music: makeMusic({ id: "m2", title: "Deltangi" }) }),
+        ],
+      }),
+    );
+    render();
+
+    expect(await screen.findByRole("button", { name: "Play Seyl" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Play Deltangi" })).toBeInTheDocument();
+    // The header keeps the bare name — it plays the list, not a track.
+    expect(screen.getByRole("button", { name: "Play" })).toBeInTheDocument();
   });
 
   it("disables play on an empty playlist", async () => {

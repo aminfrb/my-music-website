@@ -79,9 +79,10 @@ Worth knowing when adding cases:
   needs App Router context, and every assertion here is about the `href`.
 - Page-level specs stub `useAuth` and `usePlayer` per file, so a test can say
   who is signed in (owner / other user / signed out) without building a session.
-- A playlist page renders one "Play" button per row plus the header's, all with
-  the same accessible name — scope those queries to a section rather than
-  reaching for `getAllBy…[0]`.
+- `t()` interpolates `{placeholder}` values (`t("playTrack", { title })`).
+  Prefer that over concatenating a verb onto a noun in the component — word
+  order differs between the two locales, and the dictionary spec checks that
+  a key's placeholders match across them.
 - Stub the network with `mockApi()` (`tests/helpers/api.ts`) rather than mocking
   the `gql` module. Mocking `gql` means a failure case has to hand back a
   rejected promise, which the runner reports as an unhandled error even though

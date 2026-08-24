@@ -101,6 +101,10 @@ const en = {
   // player / track
   play: "Play",
   pause: "Pause",
+  // Per-track controls repeat down a list, so their accessible names have to
+  // name the track — otherwise a screen reader reads "Play" twenty times.
+  playTrack: "Play {title}",
+  pauseTrack: "Pause {title}",
   next: "Next",
   previous: "Previous",
   nowPlaying: "Now playing",
@@ -338,6 +342,8 @@ const fa: Record<keyof typeof en, string> = {
 
   play: "پخش",
   pause: "توقف",
+  playTrack: "پخش {title}",
+  pauseTrack: "توقف {title}",
   next: "بعدی",
   previous: "قبلی",
   nowPlaying: "در حال پخش",

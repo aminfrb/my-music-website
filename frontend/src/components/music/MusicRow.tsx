@@ -41,7 +41,11 @@ export function MusicRow({
         <button
           type="button"
           onClick={onPlay}
-          aria-label={active && isPlaying ? t("pause") : t("play")}
+          aria-label={
+            active && isPlaying
+              ? t("pauseTrack", { title: music.title })
+              : t("playTrack", { title: music.title })
+          }
           className="absolute inset-0 grid place-items-center rounded-lg bg-black/50 text-white opacity-0 transition-opacity group-hover:opacity-100 focus:opacity-100"
         >
           {active && isPlaying ? (

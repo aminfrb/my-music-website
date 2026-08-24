@@ -70,6 +70,42 @@ describe("LocaleProvider", () => {
     await waitFor(() => expect(screen.getByTestId("locale")).toHaveTextContent("en"));
   });
 
+  it("substitutes placeholders, in whichever order the translation puts them", async () => {
+    function Interpolated({ locale }: { locale: "en" | "fa" }) {
+      const { t, setLocale } = useLocale();
+      return (
+        <div>
+          <span data-testid="label">{t("playTrack", { title: "Seyl" })}</span>
+          <button onClick={() => setLocale(locale)}>switch</button>
+        </div>
+      );
+    }
+    const user = userEvent.setup();
+    render(<Interpolated locale="fa" />, { wrapper: LocaleProvider });
+
+    await waitFor(() => expect(screen.getByTestId("label")).toHaveTextContent("Play Seyl"));
+    await user.click(screen.getByRole("button", { name: "switch" }));
+    await waitFor(() => expect(screen.getByTestId("label")).toHaveTextContent("پخش Seyl"));
+  });
+
+  it("leaves an unmatched placeholder visible, so a missing value is obvious", async () => {
+    function Missing() {
+      const { t } = useLocale();
+      return <span data-testid="label">{t("playTrack", { wrong: "x" })}</span>;
+    }
+    render(<Missing />, { wrapper: LocaleProvider });
+    await waitFor(() => expect(screen.getByTestId("label")).toHaveTextContent("Play {title}"));
+  });
+
+  it("returns the raw template when no values are passed", async () => {
+    function Raw() {
+      const { t } = useLocale();
+      return <span data-testid="label">{t("playTrack")}</span>;
+    }
+    render(<Raw />, { wrapper: LocaleProvider });
+    await waitFor(() => expect(screen.getByTestId("label")).toHaveTextContent("Play {title}"));
+  });
+
   it("falls back to the key itself rather than rendering blank", async () => {
     function Missing() {
       const { t } = useLocale();

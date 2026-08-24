@@ -13,12 +13,15 @@ import { dictionaries, type Dict } from "@/i18n/dictionaries";
 import { getStoredLocale, setStoredLocale } from "@/lib/graphql";
 import type { Locale } from "@/lib/types";
 
+/** Values substituted into a `{placeholder}` in a dictionary entry. */
+export type TranslationParams = Record<string, string | number>;
+
 interface LocaleContextValue {
   locale: Locale;
   dir: "ltr" | "rtl";
   setLocale: (locale: Locale) => void;
   toggleLocale: () => void;
-  t: (key: keyof Dict) => string;
+  t: (key: keyof Dict, params?: TranslationParams) => string;
 }
 
 const LocaleContext = createContext<LocaleContextValue | null>(null);
@@ -47,8 +50,22 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     setLocale(locale === "en" ? "fa" : "en");
   }, [locale, setLocale]);
 
+  /**
+   * Look up a phrase, substituting any `{placeholder}` values.
+   *
+   * Interpolating rather than concatenating matters for a bilingual UI: word
+   * order isn't the same in both languages, so "Play {title}" has to be one
+   * translatable string per locale, not a verb glued to a noun in code.
+   * An unmatched placeholder is left visible so a missing value is obvious.
+   */
   const t = useCallback(
-    (key: keyof Dict) => dictionaries[locale][key] ?? String(key),
+    (key: keyof Dict, params?: TranslationParams) => {
+      const template = dictionaries[locale][key] ?? String(key);
+      if (!params) return template;
+      return template.replace(/\{(\w+)\}/g, (match, name: string) =>
+        name in params ? String(params[name]) : match,
+      );
+    },
     [locale],
   );
 

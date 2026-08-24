@@ -50,7 +50,7 @@ describe("MusicCard", () => {
     const queue = [track, makeMusic({ id: "m2" })];
     renderWithProviders(<MusicCard music={track} queue={queue} />);
 
-    await userEvent.setup().click(screen.getByRole("button", { name: "Play" }));
+    await userEvent.setup().click(screen.getByRole("button", { name: "Play Seyl" }));
 
     expect(player.playTrack).toHaveBeenCalledWith(track, queue);
   });
@@ -61,30 +61,45 @@ describe("MusicCard", () => {
     player.isPlaying = true;
     renderWithProviders(<MusicCard music={track} />);
 
-    await userEvent.setup().click(screen.getByRole("button", { name: "Pause" }));
+    await userEvent.setup().click(screen.getByRole("button", { name: "Pause Seyl" }));
 
     expect(player.toggle).toHaveBeenCalledOnce();
     expect(player.playTrack).not.toHaveBeenCalled();
   });
 
-  it("labels the control Play or Pause for screen readers", () => {
-    const track = makeMusic({ id: "m1" });
+  it("names the control after the track, so a list of them is distinguishable", () => {
+    // Cards repeat down a rail; a control named only "Play" is useless to a
+    // screen reader once there is more than one on the page.
+    const track = makeMusic({ id: "m1", title: "Seyl" });
     const { unmount } = renderWithProviders(<MusicCard music={track} />);
-    expect(screen.getByRole("button", { name: "Play" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Play Seyl" })).toBeInTheDocument();
     unmount();
 
     player.currentId = "m1";
     player.isPlaying = true;
     renderWithProviders(<MusicCard music={track} />);
-    expect(screen.getByRole("button", { name: "Pause" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Pause Seyl" })).toBeInTheDocument();
+  });
+
+  it("gives two cards in the same rail different accessible names", () => {
+    const a = makeMusic({ id: "m1", title: "Seyl" });
+    const b = makeMusic({ id: "m2", title: "Deltangi" });
+    renderWithProviders(
+      <>
+        <MusicCard music={a} />
+        <MusicCard music={b} />
+      </>,
+    );
+    expect(screen.getByRole("button", { name: "Play Seyl" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Play Deltangi" })).toBeInTheDocument();
   });
 
   it("does not navigate when the play button is clicked", async () => {
     // The button sits inside the card's link; without preventDefault, playing a
     // track would also open its page.
-    const track = makeMusic({ id: "m1" });
+    const track = makeMusic({ id: "m1", title: "Seyl" });
     renderWithProviders(<MusicCard music={track} />);
-    const button = screen.getByRole("button", { name: "Play" });
+    const button = screen.getByRole("button", { name: "Play Seyl" });
 
     const event = new MouseEvent("click", { bubbles: true, cancelable: true });
     button.dispatchEvent(event);
@@ -97,7 +112,9 @@ describe("MusicCard", () => {
       <MusicCard music={makeMusic({ playCount: 1500 })} />,
       { locale: "fa" },
     );
-    expect(screen.getByRole("button", { name: "پخش" })).toBeInTheDocument();
+    // The Persian entry is its own template, so word order comes from the
+    // translation rather than from string concatenation in the component.
+    expect(screen.getByRole("button", { name: "پخش Seyl" })).toBeInTheDocument();
     expect(screen.getByText(/۱\.۵K/)).toBeInTheDocument();
   });
 
