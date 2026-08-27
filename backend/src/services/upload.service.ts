@@ -296,7 +296,6 @@ export const uploadService = {
       session.audio.hash,
     );
 
-    const autoPublish = env.uploads.autoPublish;
     const music = await Music.create({
       title: m.title,
       artistName: m.artistName,
@@ -313,9 +312,11 @@ export const uploadService = {
       dedupeKey: dedupeKeyFor(m.title, m.artistName),
       artistKey: normalizeText(m.artistName),
       uploadedBy: user._id,
-      status: autoPublish ? "published" : "pending",
+      // Uploads go live immediately — there is no pre-publication review.
+      // Moderation is after the fact: admins can still block or remove a track.
+      status: "published",
       visibility: m.visibility,
-      publishedAt: autoPublish ? new Date() : null,
+      publishedAt: new Date(),
       normalized: buildNormalized([m.title, m.artistName, ...m.tags]),
     });
 

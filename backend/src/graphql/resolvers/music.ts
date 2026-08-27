@@ -4,7 +4,7 @@ import { musicService } from "../../services/music.service";
 import { reactionService } from "../../services/reaction.service";
 import { reportService } from "../../services/report.service";
 import { catalogService } from "../../services/catalog.service";
-import { presignGetUrl } from "../../upload/storage";
+import { mediaUrlFor } from "../../upload/storage";
 import { idOf, mediaUrl } from "./helpers";
 import type { ReactionType } from "../../constants";
 import { clampLimit, type PageArgs } from "../../utils/pagination";
@@ -43,7 +43,7 @@ export const musicResolvers = {
   Music: {
     id: idOf,
     coverUrl: (p: IMusic) => mediaUrl(p.coverImageKey),
-    streamUrl: (p: IMusic) => presignGetUrl(p.audioFileKey),
+    streamUrl: (p: IMusic) => mediaUrlFor(p.audioFileKey),
     uploader: (p: IMusic) => User.findById(p.uploadedBy).lean().exec(),
     genre: (p: IMusic) => Genre.findById(p.genre).lean().exec(),
     reactionBreakdown: (p: IMusic) =>

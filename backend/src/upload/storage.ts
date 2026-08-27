@@ -62,6 +62,29 @@ export async function putObject(key: string, body: Buffer, contentType: string):
   );
 }
 
+/**
+ * Plain, unsigned URL for an object, served from the public base URL (a CDN or
+ * custom domain mapped to the bucket root). Returns null when no public base is
+ * configured, so callers fall back to presigning.
+ *
+ * Each path segment is encoded individually — keys may contain spaces or other
+ * characters that are legal in S3 but not in a URL path.
+ */
+export function publicObjectUrl(key: string): string | null {
+  const base = env.s3.publicBaseUrl.replace(/\/+$/, "");
+  if (!base) return null;
+  const path = key.replace(/^\/+/, "").split("/").map(encodeURIComponent).join("/");
+  return `${base}/${path}`;
+}
+
+/**
+ * The URL clients use to fetch a media object: unsigned and permanent when a
+ * public base URL is configured, otherwise a short-lived presigned one.
+ */
+export function mediaUrlFor(key: string, ttlSeconds?: number): string | Promise<string> {
+  return publicObjectUrl(key) ?? presignGetUrl(key, ttlSeconds);
+}
+
 /** Short-lived presigned GET URL (playback / cover). Honors HTTP Range → seekable. */
 export function presignGetUrl(key: string, ttlSeconds = env.s3.getTtl): Promise<string> {
   return getSignedUrl(s3, new GetObjectCommand({ Bucket: env.s3.bucket, Key: key }), {

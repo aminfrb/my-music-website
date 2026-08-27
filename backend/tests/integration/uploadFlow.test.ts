@@ -184,6 +184,30 @@ describeDb("upload flow", () => {
       expect(stored?.status).toBe("published");
     });
 
+    it("goes live immediately — no admin approval step", async () => {
+      const session = await sessionWithAudio();
+      await uploadService.setMetadata(uploader, session._id.toString(), {
+        title: "Bitab",
+        artistName: "Amin",
+        genreId: genre._id.toString(),
+      });
+      const music = await uploadService.publish(uploader, session._id.toString());
+
+      // A "pending" track is filtered out of every public feed, so anything
+      // other than "published" here means uploads silently vanish.
+      expect(music.status).toBe("published");
+      expect(music.publishedAt).toBeInstanceOf(Date);
+
+      const visible = await Music.findOne({
+        _id: music._id,
+        status: "published",
+        visibility: "public",
+      })
+        .lean()
+        .exec();
+      expect(visible).not.toBeNull();
+    });
+
     it("refuses a song another user already owns", async () => {
       const other = await makeUser({ displayName: "Ali" });
       await makeTrack({ uploadedBy: other._id, title: "Seyl", artistName: "Mehrad Hidden" });

@@ -178,9 +178,10 @@ const en = {
   dropImage: "Drop an image, or click to browse",
   publish: "Publish",
   publishing: "Publishing…",
-  uploadDone: "Your track was submitted!",
-  uploadPendingNote:
-    "It will appear publicly once a moderator approves it. You'll get a notification.",
+  uploadDone: "Your track is live!",
+  uploadLiveNote:
+    "It's public now — anyone can find it and play it.",
+  publishGoesLiveNote: "Publishing makes this track public straight away.",
   uploadAnother: "Upload another",
   next_: "Next",
   back: "Back",
@@ -415,9 +416,10 @@ const fa: Record<keyof typeof en, string> = {
   dropImage: "تصویر را رها کن یا کلیک کن",
   publish: "انتشار",
   publishing: "در حال انتشار…",
-  uploadDone: "آهنگت ثبت شد!",
-  uploadPendingNote:
-    "پس از تأیید مدیر به‌صورت عمومی نمایش داده می‌شود. اعلانش را دریافت می‌کنی.",
+  uploadDone: "آهنگت منتشر شد!",
+  uploadLiveNote:
+    "همین حالا عمومی است — هرکسی می‌تواند پیدایش کند و گوش بدهد.",
+  publishGoesLiveNote: "با انتشار، آهنگ بی‌درنگ عمومی می‌شود.",
   uploadAnother: "بارگذاری آهنگ دیگر",
   next_: "بعدی",
   back: "قبلی",

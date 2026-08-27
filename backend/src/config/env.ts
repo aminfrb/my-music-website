@@ -50,8 +50,6 @@ export const env = {
   uploads: {
     maxAudioBytes: int("MAX_AUDIO_BYTES", 52_428_800), // 50 MB
     maxImageBytes: int("MAX_IMAGE_BYTES", 5_242_880), // 5 MB
-    // Auto-publish bypasses the moderation queue (content lands "published").
-    autoPublish: bool("AUTO_PUBLISH", false),
     // Daily upload caps — stricter for brand-new accounts, looser for trusted ones.
     dailyLimitNewUser: int("DAILY_UPLOAD_LIMIT_NEW", 3),
     dailyLimitDefault: int("DAILY_UPLOAD_LIMIT", 10),
@@ -71,6 +69,11 @@ export const env = {
     accessKeyId: required("S3_ACCESS_KEY_ID", "harmony"),
     secretAccessKey: required("S3_SECRET_ACCESS_KEY", "harmony-secret"),
     forcePathStyle: bool("S3_FORCE_PATH_STYLE", true),
+    // Public base URL for a CDN / custom domain mapped to the bucket root.
+    // When set, media (covers, avatars, audio) is handed to clients as plain
+    // unsigned URLs served from here instead of short-lived presigned ones.
+    // Leave empty to fall back to presigning.
+    publicBaseUrl: (process.env.PUBLIC_MEDIA_URL ?? "").trim().replace(/\/$/, ""),
     // TTL (seconds) for presigned GET (playback) URLs.
     getTtl: int("PRESIGN_GET_TTL", 3600),
     // TTL (seconds) for presigned PUT (direct upload) URLs.

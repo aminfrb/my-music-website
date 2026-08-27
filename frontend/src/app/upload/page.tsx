@@ -291,7 +291,7 @@ function UploadContent() {
             <Check className="h-8 w-8" />
           </span>
           <h2 className="font-heading text-xl tracking-wide text-text">{t("uploadDone")}</h2>
-          <p className="max-w-sm text-sm text-text-muted">{t("uploadPendingNote")}</p>
+          <p className="max-w-sm text-sm text-text-muted">{t("uploadLiveNote")}</p>
           <div className="mt-2 flex gap-3">
             <Button onClick={reset}>{t("uploadAnother")}</Button>
             <Link href="/me">
@@ -531,8 +531,8 @@ function UploadContent() {
               </div>
             )}
 
-            <p className="rounded-xl bg-warning/10 px-4 py-3 text-sm text-warning">
-              {t("uploadPendingNote")}
+            <p className="rounded-xl bg-surface px-4 py-3 text-sm text-text-muted">
+              {t("publishGoesLiveNote")}
             </p>
 
             <div className="flex justify-between gap-2 pt-1">

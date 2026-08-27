@@ -2,7 +2,7 @@ import { Types } from "mongoose";
 import { Music, User, type IMusic, type IUser } from "../models";
 import { errors } from "../utils/errors";
 import { dedupeKeyFor } from "../utils/text";
-import { presignGetUrl } from "../upload/storage";
+import { mediaUrlFor } from "../upload/storage";
 
 /** Statuses that still "own" a song identity. A rejected or blocked upload
  *  releases the name so someone else can post the track properly. */
@@ -76,7 +76,7 @@ export const duplicateService = {
 
   async details(match: DuplicateMatch): Promise<DuplicateDetails> {
     const avatarUrl = match.uploader?.profileImageKey
-      ? await presignGetUrl(match.uploader.profileImageKey).catch(() => null)
+      ? await Promise.resolve(mediaUrlFor(match.uploader.profileImageKey)).catch(() => null)
       : null;
     return {
       kind: match.kind,
