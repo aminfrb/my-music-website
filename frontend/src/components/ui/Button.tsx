@@ -26,7 +26,7 @@ const sizes: Record<Size, string> = {
   sm: "h-8 px-3 text-sm rounded-lg",
   md: "h-9 px-4 text-sm rounded-lg",
   lg: "h-11 px-5 text-sm rounded-lg",
-  icon: "h-9 w-9 rounded-full justify-center",
+  icon: "h-9 w-9 rounded-full justify-center touch:min-w-11",
 };
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
@@ -39,6 +39,8 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
       disabled={disabled || loading}
       className={cn(
         "inline-flex items-center justify-center gap-2 font-medium transition-all duration-200 cursor-pointer",
+        // A finger needs ~44px; a mouse doesn't. Only coarse pointers pay for it.
+        "touch:min-h-11",
         "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/70 focus-visible:ring-offset-2 focus-visible:ring-offset-bg",
         "disabled:opacity-50 disabled:cursor-not-allowed",
         variants[variant],

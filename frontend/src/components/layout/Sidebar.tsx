@@ -43,7 +43,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   const { user, isAdmin } = useAuth();
 
   return (
-    <nav className="flex flex-col gap-1">
+    <nav className="flex flex-col gap-1" aria-label={t("primaryNav")}>
       {NAV.filter((item) => {
         if (item.admin) return isAdmin;
         if (item.auth) return Boolean(user);
@@ -58,7 +58,7 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
             href={item.href}
             onClick={onNavigate}
             className={cn(
-              "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
+              "flex min-h-11 items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
               active
                 ? "bg-surface text-text"
                 : "text-text-muted hover:bg-surface/60 hover:text-text",
@@ -76,14 +76,26 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
   );
 }
 
-export function Brand({ onClick }: { onClick?: () => void }) {
+/**
+ * `compact` drops the wordmark on the narrowest screens. The phone header has
+ * to fit a menu button, the brand and the account controls inside 320px; the
+ * mark alone still identifies the app, and the drawer shows the full name.
+ */
+export function Brand({ onClick, compact }: { onClick?: () => void; compact?: boolean }) {
   const { t } = useLocale();
   return (
-    <Link href="/" onClick={onClick} className="flex items-center gap-2.5">
-      <span className="relative grid h-9 w-9 place-items-center overflow-hidden rounded-xl bg-gradient-brand shadow-glow">
+    <Link href="/" onClick={onClick} className="flex min-h-11 min-w-0 items-center gap-2.5">
+      <span className="relative grid h-9 w-9 shrink-0 place-items-center overflow-hidden rounded-xl bg-gradient-brand shadow-glow">
         <SpiderWeb className="h-8 w-8 text-white/90" spokes={10} rings={4} strokeWidth={1.4} />
       </span>
-      <span className="font-heading text-xl tracking-wide text-text">{t("appName")}</span>
+      <span
+        className={cn(
+          "truncate font-heading text-xl tracking-wide text-text",
+          compact && "hidden sm:inline",
+        )}
+      >
+        {t("appName")}
+      </span>
     </Link>
   );
 }

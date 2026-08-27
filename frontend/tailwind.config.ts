@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import plugin from "tailwindcss/plugin";
 
 /**
  * Colors, fonts and radii all reference CSS variables declared in
@@ -56,15 +57,33 @@ const config: Config = {
         "spin-slow": {
           to: { transform: "rotate(360deg)" },
         },
+        "fade-in": {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+        // `--drawer-from` is set per direction so the panel always enters from
+        // the edge it is anchored to.
+        "drawer-in": {
+          "0%": { transform: "translateX(var(--drawer-from, -100%))" },
+          "100%": { transform: "translateX(0)" },
+        },
       },
       animation: {
         "fade-up": "fade-up 0.4s ease both",
         "equalizer": "equalizer 0.9s ease-in-out infinite",
         "spin-slow": "spin-slow 8s linear infinite",
+        "fade-in": "fade-in 0.2s ease both",
+        "drawer-in": "drawer-in 0.25s cubic-bezier(0.32, 0.72, 0, 1) both",
       },
     },
   },
-  plugins: [],
+  plugins: [
+    // `touch:` targets coarse pointers — phones and tablets — so controls can
+    // be sized for a finger there without inflating them for a mouse.
+    plugin(({ addVariant }) => {
+      addVariant("touch", "@media (pointer: coarse)");
+    }),
+  ],
 };
 
 export default config;

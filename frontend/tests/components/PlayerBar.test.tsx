@@ -140,3 +140,26 @@ describe("PlayerBar control names", () => {
     expect(screen.queryByRole("button", { name: "Mute" })).not.toBeInTheDocument();
   });
 });
+
+describe("PlayerBar on a phone", () => {
+  it("keeps skip controls out of the way until there is room for them", () => {
+    // At 360px the cover, transport and close leave the title about 80px. The
+    // compact bar keeps play/pause and gives the space back to the track name;
+    // skipping returns at `sm`.
+    renderWithProviders(<PlayerBar />);
+
+    for (const name of ["Previous", "Next"]) {
+      expect(screen.getByRole("button", { name }).className).toContain("hidden sm:grid");
+    }
+    expect(screen.getByRole("button", { name: "Play" }).className).not.toContain("hidden");
+  });
+
+  it("lets each track name pick its own direction", () => {
+    // A Latin title inside the Persian UI (and vice versa) otherwise truncates
+    // from the wrong end and reads with its punctuation flipped.
+    renderWithProviders(<PlayerBar />, { locale: "fa" });
+
+    expect(screen.getByText("Seyl")).toHaveAttribute("dir", "auto");
+    expect(screen.getByText("Mehrad Hidden")).toHaveAttribute("dir", "auto");
+  });
+});

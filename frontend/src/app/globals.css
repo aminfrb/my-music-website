@@ -186,6 +186,38 @@ input[type="range"]::-moz-range-thumb {
   background: var(--color-text);
 }
 
+@media (pointer: coarse) {
+  /* iOS Safari zooms the viewport whenever a focused field is smaller than
+     16px, and does not zoom back out afterwards — tapping the login box left
+     the whole app enlarged. Raising it only for coarse pointers keeps the
+     denser type on desktop. (The fix is the font size, never
+     `maximum-scale=1`, which would take pinch-zoom away from everyone.) */
+  input:not([type="range"]),
+  select,
+  textarea {
+    font-size: 16px;
+  }
+}
+
+/* A 4px-tall bar is fine to hit with a mouse and nearly impossible with a
+   thumb. On touch, grow the grab area with vertical padding and keep the
+   painted track its original height by clipping the fill to the content box. */
+@media (pointer: coarse) {
+  input[type="range"] {
+    box-sizing: content-box;
+    padding-block: 12px;
+    background-clip: content-box;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    width: 16px;
+    height: 16px;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+  }
+}
+
 /* Gentle sway for the decorative corner spider */
 @keyframes spider-sway {
   0%,

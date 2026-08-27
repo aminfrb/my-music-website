@@ -17,6 +17,10 @@ const open = (locale: "en" | "fa" = "en") =>
     { locale },
   );
 
+/** The dialog is portalled to <body>, so it is not under the render container. */
+const backdropOf = () =>
+  document.querySelector<HTMLElement>("[data-overlay] [aria-hidden='true']");
+
 describe("Modal", () => {
   it("renders nothing while closed", () => {
     const { container } = renderWithProviders(
@@ -46,8 +50,8 @@ describe("Modal", () => {
   });
 
   it("hides the backdrop from assistive tech rather than naming it", () => {
-    const { container } = open();
-    const backdrop = container.querySelector("[aria-hidden='true']");
+    open();
+    const backdrop = backdropOf();
     expect(backdrop).toBeTruthy();
     // A focusable element must never be aria-hidden.
     expect(backdrop?.tagName).toBe("DIV");
@@ -61,9 +65,8 @@ describe("Modal", () => {
     });
 
     it("closes when the backdrop is clicked", async () => {
-      const { container } = open();
-      const backdrop = container.querySelector("[aria-hidden='true']") as HTMLElement;
-      await userEvent.setup().click(backdrop);
+      open();
+      await userEvent.setup().click(backdropOf()!);
       expect(onClose).toHaveBeenCalledOnce();
     });
 
@@ -75,6 +78,7 @@ describe("Modal", () => {
 
     it("does not close on any other key", async () => {
       open();
+      // Focus sits on the panel, not the close button, so these do nothing.
       await userEvent.setup().keyboard("{Enter}a ");
       expect(onClose).not.toHaveBeenCalled();
     });
@@ -95,5 +99,30 @@ describe("Modal", () => {
       // Previously hardcoded English, so a Persian UI announced "Close".
       expect(screen.queryByRole("button", { name: "Close" })).not.toBeInTheDocument();
     });
+  });
+});
+
+describe("Modal — overlay behaviour", () => {
+  // A dialog rendered inside a `backdrop-filter`/`transform` ancestor measures
+  // `fixed inset-0` against that ancestor instead of the viewport, which is how
+  // the mobile drawer ended up collapsed to the height of the header.
+  it("renders into the body, clear of any containing block above it", () => {
+    open();
+    const dialog = screen.getByRole("dialog");
+    expect(dialog.closest("[data-overlay]")?.parentElement).toBe(document.body);
+  });
+
+  it("locks the page behind it, and lets go on close", async () => {
+    const { unmount } = open();
+    expect(document.body.style.overflow).toBe("hidden");
+
+    unmount();
+
+    expect(document.body.style.overflow).toBe("");
+  });
+
+  it("moves focus into the dialog", () => {
+    open();
+    expect(screen.getByRole("dialog").contains(document.activeElement)).toBe(true);
   });
 });

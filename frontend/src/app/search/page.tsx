@@ -75,7 +75,7 @@ function SearchContent() {
                   <Link
                     key={g.id}
                     href={`/genre/${g.slug}`}
-                    className="rounded-full border border-border bg-surface/60 px-4 py-2 text-sm text-text-muted transition-all hover:border-primary/60 hover:text-text"
+                    className="inline-flex min-h-11 items-center rounded-full border border-border bg-surface/60 px-4 py-2 text-sm text-text-muted transition-all hover:border-primary/60 hover:text-text"
                   >
                     {g.name}
                   </Link>

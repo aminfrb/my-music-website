@@ -77,7 +77,10 @@ export function PlayerBar() {
 
       <div className="flex items-center gap-3 px-4 py-3 sm:px-6">
         {/* Track info */}
-        <Link href={`/music/${current.id}`} className="flex min-w-0 items-center gap-3">
+        <Link
+          href={`/music/${current.id}`}
+          className="flex min-w-0 flex-1 items-center gap-3 sm:flex-none"
+        >
           <div className="h-12 w-12 shrink-0">
             <Cover
               src={current.coverUrl}
@@ -87,8 +90,12 @@ export function PlayerBar() {
             />
           </div>
           <div className="min-w-0">
-            <p className="truncate text-sm font-medium text-text">{current.title}</p>
-            <p className="truncate text-xs text-text-muted">{current.artistName}</p>
+            <p dir="auto" className="truncate text-sm font-medium text-text">
+              {current.title}
+            </p>
+            <p dir="auto" className="truncate text-xs text-text-muted">
+              {current.artistName}
+            </p>
           </div>
         </Link>
 
@@ -99,7 +106,7 @@ export function PlayerBar() {
             onClick={prev}
             disabled={index <= 0}
             aria-label={t("previous")}
-            className="grid h-10 w-10 place-items-center rounded-full text-text-muted transition-colors hover:text-text disabled:opacity-40 cursor-pointer"
+            className="hidden sm:grid h-10 w-10 shrink-0 place-items-center rounded-full text-text-muted transition-colors hover:text-text disabled:opacity-40 cursor-pointer touch:h-11 touch:w-11"
           >
             <SkipBack className="h-5 w-5 fill-current rtl:-scale-x-100" />
           </button>
@@ -107,7 +114,7 @@ export function PlayerBar() {
             type="button"
             onClick={toggle}
             aria-label={isPlaying ? t("pause") : t("play")}
-            className="grid h-11 w-11 place-items-center rounded-full bg-text text-bg transition-transform hover:scale-105 cursor-pointer"
+            className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-text text-bg transition-transform hover:scale-105 cursor-pointer touch:h-12 touch:w-12"
           >
             {isPlaying ? (
               <Pause className="h-5 w-5 fill-current" />
@@ -120,7 +127,7 @@ export function PlayerBar() {
             onClick={next}
             disabled={index >= queue.length - 1}
             aria-label={t("next")}
-            className="grid h-10 w-10 place-items-center rounded-full text-text-muted transition-colors hover:text-text disabled:opacity-40 cursor-pointer"
+            className="hidden sm:grid h-10 w-10 shrink-0 place-items-center rounded-full text-text-muted transition-colors hover:text-text disabled:opacity-40 cursor-pointer touch:h-11 touch:w-11"
           >
             <SkipForward className="h-5 w-5 fill-current rtl:-scale-x-100" />
           </button>
@@ -161,7 +168,7 @@ export function PlayerBar() {
           onClick={close}
           aria-label={t("closePlayer")}
           title={t("closePlayer")}
-          className="ltr:ml-1 rtl:mr-1 grid h-9 w-9 shrink-0 place-items-center rounded-full text-text-muted transition-colors hover:bg-surface hover:text-text cursor-pointer"
+          className="ltr:ml-1 rtl:mr-1 grid h-9 w-9 shrink-0 place-items-center rounded-full text-text-muted transition-colors hover:bg-surface hover:text-text cursor-pointer touch:h-11 touch:w-11"
         >
           <X className="h-5 w-5" />
         </button>
