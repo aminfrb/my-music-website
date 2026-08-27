@@ -60,6 +60,7 @@ function ThemeToggle() {
 
 function NotificationsBell() {
   const { user } = useAuth();
+  const { t } = useLocale();
   const { data } = useQuery({
     queryKey: ["unreadCount"],
     queryFn: () => gql<{ unreadNotificationCount: number }>(UNREAD_COUNT),
@@ -72,7 +73,7 @@ function NotificationsBell() {
     <Link
       href="/notifications"
       className="relative grid h-10 w-10 place-items-center rounded-full text-text-muted transition-colors hover:bg-surface hover:text-text"
-      aria-label="Notifications"
+      aria-label={t("nav_notifications")}
     >
       <Bell className="h-5 w-5" />
       {count > 0 && (

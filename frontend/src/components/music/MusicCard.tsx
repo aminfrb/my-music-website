@@ -58,7 +58,7 @@ export function MusicCard({
             {active && isPlaying ? (
               <Pause className="h-5 w-5 fill-current" />
             ) : (
-              <Play className="h-5 w-5 fill-current ltr:ml-0.5" />
+              <Play className="h-5 w-5 fill-current ml-0.5" />
             )}
           </button>
         </div>

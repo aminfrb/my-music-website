@@ -16,6 +16,18 @@ import { Cover } from "@/components/ui/Cover";
 import { usePlayer } from "@/providers/PlayerProvider";
 import { useLocale } from "@/providers/LocaleProvider";
 
+/**
+ * The filled part of a slider, as a percentage the stylesheet can paint from
+ * whichever edge the current direction starts at. It has to be a custom
+ * property rather than an inline gradient: an inline `linear-gradient(to right,
+ * …)` is physical, so in Persian it fills from the left while the native thumb
+ * travels right-to-left, and the two disagree.
+ */
+function rangeFill(percent: number): React.CSSProperties {
+  const clamped = Math.min(100, Math.max(0, percent));
+  return { "--range-fill": `${Number(clamped.toFixed(2))}%` } as React.CSSProperties;
+}
+
 export function PlayerBar() {
   const {
     current,
@@ -53,11 +65,9 @@ export function PlayerBar() {
             step={0.1}
             value={currentTime}
             onChange={(e) => seek(Number(e.target.value))}
-            aria-label="Seek"
+            aria-label={t("seek")}
             className="flex-1"
-            style={{
-              background: `linear-gradient(to right, var(--color-primary) ${progress}%, var(--color-border) ${progress}%)`,
-            }}
+            style={rangeFill(progress)}
           />
           <span className="w-10 text-[11px] tabular-nums text-text-faint">
             {formatDuration(duration)}
@@ -91,7 +101,7 @@ export function PlayerBar() {
             aria-label={t("previous")}
             className="grid h-10 w-10 place-items-center rounded-full text-text-muted transition-colors hover:text-text disabled:opacity-40 cursor-pointer"
           >
-            <SkipBack className="h-5 w-5 fill-current" />
+            <SkipBack className="h-5 w-5 fill-current rtl:-scale-x-100" />
           </button>
           <button
             type="button"
@@ -102,7 +112,7 @@ export function PlayerBar() {
             {isPlaying ? (
               <Pause className="h-5 w-5 fill-current" />
             ) : (
-              <Play className="h-5 w-5 fill-current ltr:ml-0.5" />
+              <Play className="h-5 w-5 fill-current ml-0.5" />
             )}
           </button>
           <button
@@ -112,7 +122,7 @@ export function PlayerBar() {
             aria-label={t("next")}
             className="grid h-10 w-10 place-items-center rounded-full text-text-muted transition-colors hover:text-text disabled:opacity-40 cursor-pointer"
           >
-            <SkipForward className="h-5 w-5 fill-current" />
+            <SkipForward className="h-5 w-5 fill-current rtl:-scale-x-100" />
           </button>
         </div>
 
@@ -121,15 +131,15 @@ export function PlayerBar() {
           <button
             type="button"
             onClick={() => setVolume(volume > 0 ? 0 : 1)}
-            aria-label="Volume"
+            aria-label={volume > 0 ? t("mute") : t("unmute")}
             className={cn(
               "grid h-9 w-9 place-items-center rounded-full text-text-muted hover:text-text cursor-pointer",
             )}
           >
             {volume > 0 ? (
-              <Volume2 className="h-5 w-5" />
+              <Volume2 className="h-5 w-5 rtl:-scale-x-100" />
             ) : (
-              <VolumeX className="h-5 w-5" />
+              <VolumeX className="h-5 w-5 rtl:-scale-x-100" />
             )}
           </button>
           <input
@@ -139,8 +149,9 @@ export function PlayerBar() {
             step={0.01}
             value={volume}
             onChange={(e) => setVolume(Number(e.target.value))}
-            aria-label="Volume level"
+            aria-label={t("volume")}
             className="w-24"
+            style={rangeFill(volume * 100)}
           />
         </div>
 

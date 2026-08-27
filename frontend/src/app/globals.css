@@ -143,14 +143,31 @@ body::before {
   scrollbar-width: none;
 }
 
-/* Range input (player seek / volume) themed with the brand color */
+/* Range input (player seek / volume) themed with the brand color.
+
+   The native range control is direction-aware: under `dir="rtl"` the browser
+   puts the maximum at the left and runs the thumb right-to-left. So the filled
+   portion has to start from the matching edge, or it grows away from the thumb
+   and the bar reads as reversed. Components set `--range-fill` to a percentage
+   and the edge is decided here, once, for every slider in the app. */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
   height: 4px;
   border-radius: 999px;
-  background: var(--color-border);
+  background: linear-gradient(
+    to right,
+    var(--color-primary) var(--range-fill, 0%),
+    var(--color-border) var(--range-fill, 0%)
+  );
   cursor: pointer;
+}
+[dir="rtl"] input[type="range"] {
+  background: linear-gradient(
+    to left,
+    var(--color-primary) var(--range-fill, 0%),
+    var(--color-border) var(--range-fill, 0%)
+  );
 }
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
