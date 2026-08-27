@@ -53,7 +53,6 @@ export default function RegisterPage() {
           <Music4 className="h-7 w-7 text-white" />
         </span>
         <h1 className="font-heading text-3xl tracking-wide text-text">{t("createAccount")}</h1>
-        <p className="mt-2 text-text-muted">{t("tagline")}</p>
       </div>
 
       <form

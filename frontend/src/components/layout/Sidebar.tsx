@@ -101,12 +101,13 @@ export function Brand({ onClick, compact }: { onClick?: () => void; compact?: bo
 }
 
 export function Sidebar() {
+  const { t } = useLocale();
   return (
     <aside className="fixed inset-y-0 z-30 hidden w-64 flex-col gap-6 border-border bg-bg-elevated/70 p-5 backdrop-blur-xl lg:flex ltr:left-0 ltr:border-r rtl:right-0 rtl:border-l">
       <Brand />
       <SidebarNav />
       <div className="mt-auto text-xs text-text-faint">
-        <p>Spidermelody · بلندگوی صداهای تازه</p>
+        <p>{t("sidebarNote")}</p>
       </div>
     </aside>
   );

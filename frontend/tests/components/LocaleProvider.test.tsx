@@ -1,8 +1,10 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { QueryClientProvider, useQuery } from "@tanstack/react-query";
 import { LocaleProvider, useLocale } from "@/providers/LocaleProvider";
 import { setStoredLocale, getStoredLocale } from "@/lib/graphql";
+import { testQueryClient } from "../helpers/render";
 
 function Probe() {
   const { locale, dir, t, toggleLocale, setLocale } = useLocale();
@@ -17,7 +19,21 @@ function Probe() {
   );
 }
 
-const renderProbe = () => render(<Probe />, { wrapper: LocaleProvider });
+/** Mirrors the app, where the locale always sits inside the query client. */
+const Wrapper = ({ children }: { children: React.ReactNode }) => (
+  <QueryClientProvider client={testQueryClient()}>
+    <LocaleProvider>{children}</LocaleProvider>
+  </QueryClientProvider>
+);
+
+const renderProbe = (extra?: React.ReactNode) =>
+  render(
+    <>
+      <Probe />
+      {extra}
+    </>,
+    { wrapper: Wrapper },
+  );
 
 describe("LocaleProvider", () => {
   it("defaults to English, left-to-right", async () => {
@@ -81,7 +97,7 @@ describe("LocaleProvider", () => {
       );
     }
     const user = userEvent.setup();
-    render(<Interpolated locale="fa" />, { wrapper: LocaleProvider });
+    render(<Interpolated locale="fa" />, { wrapper: Wrapper });
 
     await waitFor(() => expect(screen.getByTestId("label")).toHaveTextContent("Play Seyl"));
     await user.click(screen.getByRole("button", { name: "switch" }));
@@ -93,7 +109,7 @@ describe("LocaleProvider", () => {
       const { t } = useLocale();
       return <span data-testid="label">{t("playTrack", { wrong: "x" })}</span>;
     }
-    render(<Missing />, { wrapper: LocaleProvider });
+    render(<Missing />, { wrapper: Wrapper });
     await waitFor(() => expect(screen.getByTestId("label")).toHaveTextContent("Play {title}"));
   });
 
@@ -102,7 +118,7 @@ describe("LocaleProvider", () => {
       const { t } = useLocale();
       return <span data-testid="label">{t("playTrack")}</span>;
     }
-    render(<Raw />, { wrapper: LocaleProvider });
+    render(<Raw />, { wrapper: Wrapper });
     await waitFor(() => expect(screen.getByTestId("label")).toHaveTextContent("Play {title}"));
   });
 
@@ -112,7 +128,7 @@ describe("LocaleProvider", () => {
       // Deliberately not a real key — this is what a typo produces at runtime.
       return <span data-testid="missing">{t("nope" as never)}</span>;
     }
-    render(<Missing />, { wrapper: LocaleProvider });
+    render(<Missing />, { wrapper: Wrapper });
     await waitFor(() => expect(screen.getByTestId("missing")).toHaveTextContent("nope"));
   });
 
@@ -125,5 +141,49 @@ describe("LocaleProvider", () => {
     } finally {
       silence.mockRestore();
     }
+  });
+});
+
+describe("LocaleProvider — server-localized data", () => {
+  it("refetches cached API data when the locale changes", async () => {
+    // Genre names are localized by the API, not by the dictionary: the client
+    // sends `x-locale` and the server picks nameEn or nameFa. Their cache key
+    // says nothing about language, so a Persian response kept being served
+    // under an English UI — the heading flipped, the genre chips didn't.
+    const queryFn = vi
+      .fn()
+      .mockResolvedValueOnce("پاپ")
+      .mockResolvedValueOnce("Pop");
+
+    function Genres() {
+      const { data } = useQuery({ queryKey: ["genres"], queryFn });
+      return <span data-testid="genre">{data ?? "…"}</span>;
+    }
+
+    setStoredLocale("fa");
+    renderProbe(<Genres />);
+    await waitFor(() => expect(screen.getByTestId("genre")).toHaveTextContent("پاپ"));
+
+    await userEvent.setup().click(screen.getByRole("button", { name: "toggle" }));
+
+    await waitFor(() => expect(screen.getByTestId("genre")).toHaveTextContent("Pop"));
+  });
+
+  it("does not refetch when the locale is merely re-set to what it already is", async () => {
+    const queryFn = vi.fn().mockResolvedValue("Pop");
+
+    function Genres() {
+      const { data } = useQuery({ queryKey: ["genres"], queryFn });
+      return <span data-testid="genre">{data ?? "…"}</span>;
+    }
+
+    setStoredLocale("fa");
+    renderProbe(<Genres />);
+    await waitFor(() => expect(screen.getByTestId("genre")).toHaveTextContent("Pop"));
+    const callsAfterLoad = queryFn.mock.calls.length;
+
+    await userEvent.setup().click(screen.getByRole("button", { name: "to-fa" }));
+
+    expect(queryFn).toHaveBeenCalledTimes(callsAfterLoad);
   });
 });

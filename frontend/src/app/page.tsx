@@ -32,9 +32,6 @@ function Hero() {
       <div className="absolute -top-24 h-64 w-64 rounded-full bg-primary/25 blur-3xl ltr:right-0 rtl:left-0" />
       <div className="absolute -bottom-24 h-64 w-64 rounded-full bg-accent/20 blur-3xl ltr:left-10 rtl:right-10" />
       <div className="relative max-w-2xl">
-        <p className="mb-3 inline-block rounded-full border border-border bg-bg/40 px-3 py-1 text-xs text-text-muted">
-          {t("tagline")}
-        </p>
         <h1 className="font-heading text-3xl leading-tight tracking-wide text-text sm:text-4xl">
           {t("heroTitle")}
         </h1>

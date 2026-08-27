@@ -6,9 +6,11 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { dictionaries, type Dict } from "@/i18n/dictionaries";
 import { getStoredLocale, setStoredLocale } from "@/lib/graphql";
 import type { Locale } from "@/lib/types";
@@ -28,6 +30,7 @@ const LocaleContext = createContext<LocaleContextValue | null>(null);
 
 export function LocaleProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>("en");
+  const queryClient = useQueryClient();
 
   // Hydrate from storage after mount (avoids SSR mismatch).
   useEffect(() => {
@@ -40,6 +43,23 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     document.documentElement.setAttribute("lang", locale);
     document.documentElement.setAttribute("dir", dir);
   }, [locale]);
+
+  /**
+   * Not everything on screen comes from the dictionary. Genre names — and the
+   * API's error messages — are localized on the server, which reads the
+   * `x-locale` header this client sends. React Query caches those responses
+   * under keys that say nothing about language, so switching locale used to
+   * flip the headings while the genre chips stayed in the old one. Dropping
+   * the cache lets every server-localized field catch up.
+   */
+  const mounted = useRef(false);
+  useEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true;
+      return;
+    }
+    void queryClient.invalidateQueries();
+  }, [locale, queryClient]);
 
   const setLocale = useCallback((next: Locale) => {
     setStoredLocale(next);

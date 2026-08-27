@@ -5,7 +5,6 @@ export type Dict = typeof en;
 const en = {
   // brand / nav
   appName: "Spidermelody",
-  tagline: "Discover. Play. Share the sound.",
   nav_home: "Home",
   nav_forYou: "For You",
   nav_search: "Search",
@@ -17,6 +16,7 @@ const en = {
   nav_settings: "Settings",
   nav_discover: "Discover",
   primaryNav: "Main",
+  sidebarNote: "Spidermelody · a stage for new sounds",
   nav_yourMusic: "Your Music",
   theme: "Theme",
   themeDark: "Dark mode",
@@ -257,7 +257,6 @@ const en = {
 
 const fa: Record<keyof typeof en, string> = {
   appName: "اسپایدرملودی",
-  tagline: "کشف کن، پخش کن، صدا را به اشتراک بگذار.",
   nav_home: "خانه",
   nav_forYou: "برای تو",
   nav_search: "جستجو",
@@ -269,6 +268,7 @@ const fa: Record<keyof typeof en, string> = {
   nav_settings: "تنظیمات",
   nav_discover: "کشف",
   primaryNav: "اصلی",
+  sidebarNote: "اسپایدرملودی · بلندگوی صداهای تازه",
   nav_yourMusic: "موزیک تو",
   theme: "پوسته",
   themeDark: "حالت تیره",
