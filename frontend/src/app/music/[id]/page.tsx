@@ -129,14 +129,6 @@ export default function MusicPage({ params }: { params: { id: string } }) {
         <ReactionBar music={music} />
       </section>
 
-      {music.description && (
-        <section className="max-w-3xl">
-          <p className="whitespace-pre-wrap leading-relaxed text-text-muted">
-            {music.description}
-          </p>
-        </section>
-      )}
-
       {music.tags.length > 0 && (
         <section className="flex flex-wrap gap-2">
           {music.tags.map((tag) => (

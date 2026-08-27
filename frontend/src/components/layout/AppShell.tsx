@@ -17,7 +17,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         aria-hidden
         className="pointer-events-none fixed top-0 -z-10 hidden overflow-hidden sm:block ltr:right-0 rtl:left-0"
       >
-        <CornerSpiderWeb className="h-[280px] w-[150px] text-primary/25 lg:h-[330px] lg:w-[180px] rtl:[transform:scaleX(-1)]" />
+        <CornerSpiderWeb className="h-[280px] w-[150px] text-text lg:h-[330px] lg:w-[180px] rtl:[transform:scaleX(-1)]" />
       </div>
       <Sidebar />
       <div className="lg:ltr:pl-64 lg:rtl:pr-64">

@@ -43,7 +43,6 @@ export function makeMusic(overrides: Partial<Music> = {}): Music {
     title: "Seyl",
     artistName: "Mehrad Hidden",
     caption: null,
-    description: null,
     duration: 200,
     tags: [],
     status: "published",

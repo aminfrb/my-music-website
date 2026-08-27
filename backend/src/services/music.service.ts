@@ -31,7 +31,6 @@ const updateSchema = z.object({
   title: z.string().min(1).max(150).optional(),
   artistName: z.string().min(1).max(120).optional(),
   caption: z.string().max(280).nullish(),
-  description: z.string().max(2000).nullish(),
   genreId: z.string().optional(),
   tags: z.array(z.string().min(1).max(30)).max(15).optional(),
   visibility: z.enum(["public", "private"]).optional(),
@@ -114,7 +113,6 @@ export const musicService = {
       music.artistKey = normalizeText(music.artistName);
     }
     if (data.caption !== undefined) music.caption = data.caption;
-    if (data.description !== undefined) music.description = data.description;
     if (data.visibility) music.visibility = data.visibility;
     if (data.tags) {
       music.tags = data.tags.map(normalizeTag).filter(Boolean);

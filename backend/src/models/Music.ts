@@ -11,7 +11,6 @@ export interface IMusic {
   title: string;
   artistName: string;
   caption?: string | null;
-  description?: string | null;
   genre: Types.ObjectId;
   tags: string[];
   coverImageKey?: string | null;
@@ -52,7 +51,6 @@ const schema = new Schema<IMusic>(
     title: { type: String, required: true, trim: true, maxlength: 150 },
     artistName: { type: String, required: true, trim: true, maxlength: 120 },
     caption: { type: String, default: null, trim: true, maxlength: 280 },
-    description: { type: String, default: null, maxlength: 2000 },
     genre: { type: Schema.Types.ObjectId, ref: "Genre", required: true, index: true },
     tags: { type: [String], default: [], index: true },
     coverImageKey: { type: String, default: null },

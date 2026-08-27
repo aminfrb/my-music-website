@@ -115,7 +115,6 @@ export interface Music {
   title: string;
   artistName: string;
   caption?: string | null;
-  description?: string | null;
   duration: number;
   fileSize: number;
   mimeType: string;
@@ -265,7 +264,6 @@ export interface UploadMetadata {
   title?: string | null;
   artistName?: string | null;
   caption?: string | null;
-  description?: string | null;
   genre?: Genre | null;
   tags: string[];
   visibility: Visibility;

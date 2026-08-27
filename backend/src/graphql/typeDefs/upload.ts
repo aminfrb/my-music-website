@@ -23,7 +23,6 @@ export const uploadTypeDefs = /* GraphQL */ `
     title: String
     artistName: String
     caption: String
-    description: String
     genre: Genre
     tags: [String!]!
     visibility: Visibility!
@@ -40,7 +39,6 @@ export const uploadTypeDefs = /* GraphQL */ `
     title: String
     artistName: String
     caption: String
-    description: String
     genreId: ID
     tags: [String!]
     visibility: Visibility

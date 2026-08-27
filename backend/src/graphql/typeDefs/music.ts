@@ -26,7 +26,6 @@ export const musicTypeDefs = /* GraphQL */ `
     title: String!
     artistName: String!
     caption: String
-    description: String
     duration: Int!
     fileSize: Int!
     mimeType: String!
@@ -69,7 +68,6 @@ export const musicTypeDefs = /* GraphQL */ `
     title: String
     artistName: String
     caption: String
-    description: String
     genreId: ID
     tags: [String!]
     visibility: Visibility

@@ -24,7 +24,6 @@ const metadataSchema = z.object({
   title: z.string().min(1).max(150).optional(),
   artistName: z.string().min(1).max(120).optional(),
   caption: z.string().max(280).nullish(),
-  description: z.string().max(2000).nullish(),
   genreId: z.string().optional(),
   tags: z.array(z.string().min(1).max(30)).max(15).optional(),
   visibility: z.enum(["public", "private"]).optional(),
@@ -53,10 +52,10 @@ async function assertDailyLimit(user: IUser): Promise<void> {
   if (today >= limit) throw errors.badInput("errors.dailyUploadLimit", { limit });
 }
 
-/** Reject tags that admins have banned, and titles/descriptions containing them. */
+/** Reject tags that admins have banned, and titles/captions containing them. */
 async function assertContentAllowed(
   title: string | undefined | null,
-  description: string | undefined | null,
+  caption: string | undefined | null,
   tags: string[],
 ): Promise<void> {
   const banned = await Tag.find({ isBanned: true }).select("name").lean().exec();
@@ -68,7 +67,7 @@ async function assertContentAllowed(
       throw errors.badInput("errors.bannedTag", { tag });
     }
   }
-  const haystack = normalizeText(`${title ?? ""} ${description ?? ""}`);
+  const haystack = normalizeText(`${title ?? ""} ${caption ?? ""}`);
   for (const name of bannedNames) {
     if (name && haystack.includes(name.replace(/-/g, " "))) {
       throw errors.badInput("errors.bannedContent");
@@ -249,7 +248,7 @@ export const uploadService = {
 
     await assertContentAllowed(
       title,
-      data.description ?? session.metadata.description,
+      data.caption ?? session.metadata.caption,
       tags,
     );
 
@@ -261,7 +260,6 @@ export const uploadService = {
       title: data.title ?? session.metadata.title ?? null,
       artistName: data.artistName ?? session.metadata.artistName ?? null,
       caption: data.caption ?? session.metadata.caption ?? null,
-      description: data.description ?? session.metadata.description ?? null,
       genre: data.genreId ? new Types.ObjectId(data.genreId) : session.metadata.genre ?? null,
       tags,
       visibility: data.visibility ?? session.metadata.visibility ?? "public",
@@ -286,7 +284,7 @@ export const uploadService = {
     await assertDailyLimit(user);
     assertValidTitle(m.title);
     assertValidArtistName(m.artistName);
-    await assertContentAllowed(m.title, m.description, m.tags);
+    await assertContentAllowed(m.title, m.caption, m.tags);
     // Re-checked at publish: the song may have been claimed by someone else
     // between the details step and now.
     await duplicateService.assertNotDuplicate(
@@ -300,7 +298,6 @@ export const uploadService = {
       title: m.title,
       artistName: m.artistName,
       caption: m.caption ?? null,
-      description: m.description ?? null,
       genre: m.genre,
       tags: m.tags,
       coverImageKey: session.cover?.finalized ? session.cover.key : null,
